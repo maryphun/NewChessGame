@@ -11,12 +11,9 @@ public class ChessManager : MonoBehaviour
     private GameObject[] wPawns, wKnights, wRooks, wBishops;
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
     private GameObject wKing, wQueen, bKing, bQueen;
-
-<<<<<<< HEAD
+    
     private BoardArray board;
-=======
     private List<GameObject> whitePieces, blackPieces;
->>>>>>> master
 
     private void Awake()
     {
@@ -29,13 +26,10 @@ public class ChessManager : MonoBehaviour
         bKnights = new GameObject[2];
         bRooks = new GameObject[2];
         bBishops = new GameObject[2];
-
-<<<<<<< HEAD
+        
         board = BoardArray.Instance();
-=======
         whitePieces = new List<GameObject>();
         blackPieces = new List<GameObject>();
->>>>>>> master
     }
 
     public IEnumerator InitiateChess()
@@ -131,7 +125,6 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move King and Queen to the correct position
-<<<<<<< HEAD
         wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
         wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
         bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
@@ -140,12 +133,6 @@ public class ChessManager : MonoBehaviour
         board.SetTilePieceAt(0, 4, wKing);
         board.SetTilePieceAt(7, 3, bQueen);
         board.SetTilePieceAt(7, 4, bKing);
-=======
-        wQueen.transform.DOMove(new Vector2(-0.5f, -3.5f), 0.5f, false);
-        wKing.transform.DOMove(new Vector2(0.5f, -3.5f), 0.5f, false);
-        bQueen.transform.DOMove(new Vector2(-0.5f, 3.5f), 0.5f, false);
-        bKing.transform.DOMove(new Vector2(0.5f, 3.5f), 0.5f, false);
-        
         yield return new WaitForSeconds(0.51f);
         
         // Update it's rendering order. This function should always get called when you move the piece
@@ -157,6 +144,5 @@ public class ChessManager : MonoBehaviour
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
         }
->>>>>>> master
     }
 }
