@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BoardArray : Singleton<BoardArray>
 {
-    [SerializeField] private ChessManager manager;
     private Vector2[] tileCenterPosition; //this is worldspace position
     private GameObject[] pieces;
 
@@ -36,10 +35,10 @@ public class BoardArray : Singleton<BoardArray>
         Vector2 firstCell = new Vector2(transform.position.x - tileSize * 7 / 2, transform.position.y - tileSize * 7 / 2);
         for (int row = 0; row < 8; row++)
         {
-            for (int col = 0; col < 8; row++)
+            for (int col = 0; col < 8; col++)
             {
                 tileCenterPosition[Index2DToIndex(row, col)] = firstCell + new Vector2(col * tileSize, row * tileSize);
-                Debug.Log(tileCenterPosition[Index2DToIndex(row, col)]);
+                //Debug.Log(tileCenterPosition[Index2DToIndex(row, col)]);
             }
         }
     }
@@ -58,7 +57,7 @@ public class BoardArray : Singleton<BoardArray>
             Debug.LogError("Index Out of Range");
             return -1;
         }
-        return column + row * column;
+        return column + row * 8;
     }
 
 }
