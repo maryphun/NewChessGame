@@ -76,19 +76,22 @@ public class ChessManager : MonoBehaviour
         blackPieces.Add(bKing);
 
         // Move all pawn to the correct position
-        for (int i = -4; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
-            wPawns[i + 4].transform.DOMove(new Vector2(i + 0.5f, -2.5f), 0.5f, false);
-            bPawns[i + 4].transform.DOMove(new Vector2((i * -1) - 0.5f, 2.5f), 0.5f, false);
+            wPawns[i].transform.DOMove(BoardArray.Instance().GetTileCenter(1, i), 0.5f, false);
+            BoardArray.Instance().SetTilePieceAt(1, i, wPawns[i]);
+            bPawns[i].transform.DOMove(BoardArray.Instance().GetTileCenter(6, i), 0.5f, false);
+            BoardArray.Instance().SetTilePieceAt(6, i, bPawns[i]);
             yield return new WaitForSeconds(0.1f);
         }
 
         // Move all Rooks to the correct position
         for (int i = 0; i < 2; i++)
         {
-            float degree = Mathf.Deg2Rad * (90 + i * 180);
-            wRooks[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 3.5f, -3.5f), 0.5f, false);
-            bRooks[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 3.5f, 3.5f), 0.5f, false);
+            wRooks[i].transform.DOMove(BoardArray.Instance().GetTileCenter(0, i * 7), 0.5f, false);
+            BoardArray.Instance().SetTilePieceAt(1, i * 7, wRooks[i]);
+            bRooks[i].transform.DOMove(BoardArray.Instance().GetTileCenter(7, i * 7), 0.5f, false);
+            BoardArray.Instance().SetTilePieceAt(7, i * 7, bRooks[i]);
         }
         
         yield return new WaitForSeconds(0.5f);
