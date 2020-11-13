@@ -12,6 +12,8 @@ public class ChessManager : MonoBehaviour
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
     private GameObject wKing, wQueen, bKing, bQueen;
 
+    private BoardArray board;
+
     private void Awake()
     {
         wPawns = new GameObject[8];
@@ -23,6 +25,8 @@ public class ChessManager : MonoBehaviour
         bKnights = new GameObject[2];
         bRooks = new GameObject[2];
         bBishops = new GameObject[2];
+
+        board = BoardArray.Instance();
     }
 
     public IEnumerator InitiateChess()
@@ -53,29 +57,36 @@ public class ChessManager : MonoBehaviour
         bKing = Instantiate(bKingPRefab, new Vector2(0f, 6f), Quaternion.identity);
 
         // Move all pawn to the correct position
-        for (int i = -4; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
-            wPawns[i + 4].transform.DOMove(new Vector2(i + 0.5f, -2.5f), 0.5f, false);
-            bPawns[i + 4].transform.DOMove(new Vector2((i * -1) - 0.5f, 2.5f), 0.5f, false);
+            Debug.Log(i);
+            wPawns[i].transform.DOMove(board.GetTileCenter(1, i), 0.5f, false);
+            bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
+            board.SetTilePieceAt(1, i, wPawns[i]);
+            board.SetTilePieceAt(6, i, bPawns[i]);
             yield return new WaitForSeconds(0.1f);
         }
 
         // Move all Rooks to the correct position
         for (int i = 0; i < 2; i++)
         {
-            float degree = Mathf.Deg2Rad * (90 + i * 180);
-            wRooks[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 3.5f, -3.5f), 0.5f, false);
-            bRooks[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 3.5f, 3.5f), 0.5f, false);
+            int index = i == 0 ? 0 : 7;
+            wRooks[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
+            bRooks[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
+            board.SetTilePieceAt(0, index, wRooks[i]);
+            board.SetTilePieceAt(7, index, bRooks[i]);
         }
-        
+
         yield return new WaitForSeconds(0.5f);
 
         // Move all Kights to the correct position
         for (int i = 0; i < 2; i++)
         {
-            float degree = Mathf.Deg2Rad * (90 + i * 180);
-            wKnights[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 2.5f, -3.5f), 0.5f, false);
-            bKnights[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 2.5f, 3.5f), 0.5f, false);
+            int index = i == 0 ? 1 : 6;
+            wKnights[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
+            bKnights[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
+            board.SetTilePieceAt(0, index, wKnights[i]);
+            board.SetTilePieceAt(7, index, bKnights[i]);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -83,17 +94,23 @@ public class ChessManager : MonoBehaviour
         // Move all Bishops to the correct position
         for (int i = 0; i < 2; i++)
         {
-            float degree = Mathf.Deg2Rad * (90 + i * 180);
-            wBishops[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 1.5f, -3.5f), 0.5f, false);
-            bBishops[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 1.5f, 3.5f), 0.5f, false);
+            int index = i == 0 ? 2 : 5;
+            wBishops[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
+            bBishops[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
+            board.SetTilePieceAt(0, index, wBishops[i]);
+            board.SetTilePieceAt(7, index, bBishops[i]);
         }
 
         yield return new WaitForSeconds(0.5f);
-        
+
         // Move King and Queen to the correct position
-        wQueen.transform.DOMove(new Vector2(-0.5f, -3.5f), 0.5f, false);
-        wKing.transform.DOMove(new Vector2(0.5f, -3.5f), 0.5f, false);
-        bQueen.transform.DOMove(new Vector2(-0.5f, 3.5f), 0.5f, false);
-        bKing.transform.DOMove(new Vector2(0.5f, 3.5f), 0.5f, false);
+        wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
+        wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
+        bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
+        bKing.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
+        board.SetTilePieceAt(0, 3, wQueen);
+        board.SetTilePieceAt(0, 4, wKing);
+        board.SetTilePieceAt(7, 3, bQueen);
+        board.SetTilePieceAt(7, 4, bKing);
     }
 }
