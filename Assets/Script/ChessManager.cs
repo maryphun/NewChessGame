@@ -11,7 +11,7 @@ public class ChessManager : MonoBehaviour
     private GameObject[] wPawns, wKnights, wRooks, wBishops;
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
     private GameObject wKing, wQueen, bKing, bQueen;
-
+    
     private BoardArray board;
     private List<GameObject> whitePieces, blackPieces;
 
@@ -26,7 +26,7 @@ public class ChessManager : MonoBehaviour
         bKnights = new GameObject[2];
         bRooks = new GameObject[2];
         bBishops = new GameObject[2];
-
+        
         board = BoardArray.Instance();
         whitePieces = new List<GameObject>();
         blackPieces = new List<GameObject>();
@@ -91,9 +91,11 @@ public class ChessManager : MonoBehaviour
         // Move all Rooks to the correct position
         for (int i = 0; i < 2; i++)
         {
-            float degree = Mathf.Deg2Rad * (90 + i * 180);
-            wRooks[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 3.5f, -3.5f), 0.5f, false);
-            bRooks[i].transform.DOMove(new Vector2(Mathf.Sin(degree) * 3.5f, 3.5f), 0.5f, false);
+            int index = i == 0 ? 0 : 7;
+            wRooks[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
+            bRooks[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
+            board.SetTilePieceAt(0, index, wRooks[i]);
+            board.SetTilePieceAt(7, index, bRooks[i]);
         }
 
         yield return new WaitForSeconds(0.5f);
