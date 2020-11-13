@@ -36,6 +36,10 @@ public class ChessManager : MonoBehaviour
         {
             wPawns[i] = Instantiate(wPawnPrefab, new Vector2(0f, -6f), Quaternion.identity);
             bPawns[i] = Instantiate(bPawnPrefab, new Vector2(0f, 6f), Quaternion.identity);
+
+            // Listing
+            whitePieces.Add(wPawns[i]);
+            blackPieces.Add(bPawns[i]);
         }
 
         // Instantiate Rook, Knight and Bishop
@@ -48,6 +52,14 @@ public class ChessManager : MonoBehaviour
             bRooks[i] = Instantiate(bRookPrefab, new Vector2(0f, 6f), Quaternion.identity);
             bKnights[i] = Instantiate(bKnightPrefab, new Vector2(0f, 6f), Quaternion.identity);
             bBishops[i] = Instantiate(bBishopPrefab, new Vector2(0f, 6f), Quaternion.identity);
+
+            // Listing
+            whitePieces.Add(wRooks[i]);
+            whitePieces.Add(wKnights[i]);
+            whitePieces.Add(wBishops[i]);
+            blackPieces.Add(bRooks[i]);
+            blackPieces.Add(bKnights[i]);
+            blackPieces.Add(bBishops[i]);
         }
 
         // Instantiate Queen and King
@@ -55,6 +67,12 @@ public class ChessManager : MonoBehaviour
         wKing = Instantiate(wKingPRefab, new Vector2(0f, -6f), Quaternion.identity);
         bQueen = Instantiate(bQueenPrefab, new Vector2(0f, 6f), Quaternion.identity);
         bKing = Instantiate(bKingPRefab, new Vector2(0f, 6f), Quaternion.identity);
+
+        // Listing
+        whitePieces.Add(wQueen);
+        whitePieces.Add(wKing);
+        blackPieces.Add(bQueen);
+        blackPieces.Add(bKing);
 
         // Move all pawn to the correct position
         for (int i = 0; i < 8; i++)
