@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4740523727248184681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4740523727248184680}
+  - component: {fileID: 4740523727248184687}
+  - component: {fileID: 4740523727248184686}
+  m_Layer: 0
+  m_Name: Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4740523727248184680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4740523727248184681}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.08015661, y: -0.3429921, z: -17.61567}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4740523727248184687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4740523727248184681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a33f576c04ac2549817ecdffd78aeda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chessBoard: {fileID: 0}
+  dust: {fileID: 6491845401687680021, guid: a4010389c9091c04f93254048a39bbcd, type: 3}
+--- !u!114 &4740523727248184686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4740523727248184681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb212bd5b8bfab44a890d284048ccbe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wPawnPrefab: {fileID: 3172866539585749895, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
+  wKnightPrefab: {fileID: 5672379465888081995, guid: 2ec26a480430fcd499336494dfbbd827, type: 3}
+  wRookPrefab: {fileID: 1367442236051627358, guid: d1629121f50423649b75f82fb2bcd8f2, type: 3}
+  wBishopPrefab: {fileID: 1174730566317185582, guid: f68be1f47df0e8a4cb3be3a613f00652, type: 3}
+  wQueenPrefab: {fileID: 2733157076689692789, guid: 3b0650423f4e14b45b970b43a83070ed, type: 3}
+  wKingPRefab: {fileID: 7346519606447110017, guid: 983049f229e1cd24ebfd178e084ac9a6, type: 3}
+  bPawnPrefab: {fileID: 3172866539585749895, guid: 9fc9fe3ada3f2a94098e20cc538f0846, type: 3}
+  bKnightPrefab: {fileID: 5672379465888081995, guid: f91e4a510ba6a6740b7c83c3570dc1ff, type: 3}
+  bRookPrefab: {fileID: 1367442236051627358, guid: cb0c5c84847c5d046a7376dd3b41048c, type: 3}
+  bBishopPrefab: {fileID: 1174730566317185582, guid: 6dc2b546dc487084f9016a61e4e576c7, type: 3}
+  bQueenPrefab: {fileID: 2733157076689692789, guid: ceb36116c25db374a9087f81ef60b551, type: 3}
+  bKingPRefab: {fileID: 7346519606447110017, guid: 226a42c2835d168479c782cba0a1ceda, type: 3}
