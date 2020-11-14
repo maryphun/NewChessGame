@@ -96,6 +96,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28167430de6e30743ae1cef10c9349c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursorMoveSpeed: 0.1
+  buttonHoldMoveInterval: 0.15
+  buttonHoldMoveTime: 0.65
   ControlOn: 1
 --- !u!95 &-6653908455464008701
 Animator:

@@ -7,12 +7,16 @@ using DG.Tweening;
 public class CursorController : MonoBehaviour
 {
     [SerializeField] private float cursorMoveSpeed = 0.25f;
+    [SerializeField] private float buttonHoldMoveInterval = 0.15f;
+    [SerializeField] private float buttonHoldMoveTime = 0.8f;
 
     [Header("Debug")]
     [SerializeField] private bool ControlOn = true;
 
-    private Vector2 currentPosition;
+    private Vector2 currentPosition, moveVector;
     private BoardArray board;
+    private bool buttonClicked;
+    private float buttonHoldTime;
     private CursorInput input = null;
 
     private CursorInput Input
@@ -31,6 +35,8 @@ public class CursorController : MonoBehaviour
         // register movement key
         Input.Default.MoveVertical.performed += ctx => MoveCursor(new Vector2(0f, ctx.ReadValue<float>()));
         Input.Default.MoveHorizontal.performed += ctx => MoveCursor(new Vector2(ctx.ReadValue<float>(), 0f));
+        Input.Default.MoveVertical.canceled += _ => buttonClicked = false;
+        Input.Default.MoveHorizontal.canceled += _ => buttonClicked = false;
 
         if (!ControlOn)
         {
@@ -54,8 +60,33 @@ public class CursorController : MonoBehaviour
         Input.Disable();
     }
 
+    private void Update()
+    {
+        if (buttonClicked)
+        {
+            buttonHoldTime += Time.deltaTime;
+
+            if (buttonHoldTime > buttonHoldMoveTime)
+            {
+                MoveCursor(moveVector);
+                buttonHoldTime = buttonHoldMoveTime - buttonHoldMoveInterval;
+            }
+        }
+    }
+
+    private void ButtonReleased()
+    {
+        buttonClicked = false;
+        buttonHoldTime = 0.0f;
+        moveVector = Vector2.zero;
+    }
+
     private void MoveCursor(Vector2 value)
     {
+        buttonClicked = true;
+        moveVector = value;
+        buttonHoldTime = 0.0f;
+
         // move position of the cursor
         Vector2 lastPosition = currentPosition;
         currentPosition = currentPosition + value;
