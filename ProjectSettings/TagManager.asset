@@ -41,6 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Cursor
+    uniqueID: 383266645
+    locked: 0
   - name: Chess
     uniqueID: 2351959255
+    locked: 0
+  - name: FlyingChess
+    uniqueID: 168976099
     locked: 0

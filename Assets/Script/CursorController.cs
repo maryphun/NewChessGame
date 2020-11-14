@@ -1,0 +1,87 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using DG.Tweening;
+
+public class CursorController : MonoBehaviour
+{
+    [SerializeField] private float cursorMoveSpeed = 0.25f;
+
+    [Header("Debug")]
+    [SerializeField] private bool ControlOn = true;
+
+    private Vector2 currentPosition;
+    private BoardArray board;
+    private CursorInput input = null;
+
+    private CursorInput Input
+    {
+        get
+        {
+            if (input != null) { return input; }
+            return input = new CursorInput();
+        }
+    }
+
+    private void Awake()
+    {
+        board = BoardArray.Instance();
+
+        // register movement key
+        Input.Default.MoveVertical.performed += ctx => MoveCursor(new Vector2(0f, ctx.ReadValue<float>()));
+        Input.Default.MoveHorizontal.performed += ctx => MoveCursor(new Vector2(ctx.ReadValue<float>(), 0f));
+
+        if (!ControlOn)
+        {
+            Input.Disable();
+        }
+
+        currentPosition = new Vector2(4, 4);
+    }
+
+    private void OnEnable()
+    {
+        // ControlOn is used for debugging.
+        if (ControlOn)
+        {
+            Input.Enable();
+        }
+    }
+
+    private void OnDisable()
+    {
+        Input.Disable();
+    }
+
+    private void MoveCursor(Vector2 value)
+    {
+        // move position of the cursor
+        Vector2 lastPosition = currentPosition;
+        currentPosition = currentPosition + value;
+        currentPosition.x = Mathf.Clamp(currentPosition.x, 0, 7);
+        currentPosition.y = Mathf.Clamp(currentPosition.y, 0, 7);
+        
+        Vector2 newPos = board.GetTileCenter((int)currentPosition.y, (int)currentPosition.x);
+        transform.DOMove(newPos, cursorMoveSpeed, false);
+
+        // sound effect
+        AudioManager.Instance.PlaySFX("cursor", 0.05f);
+
+        // select anad unselect pieces
+        if (lastPosition != currentPosition)
+        {
+            GameObject piece = board.GetTilePieceAt((int)lastPosition.y, (int)lastPosition.x);
+            if (piece != null)
+            {
+                piece.GetComponent<ChessPieceProperties>().Unselect(cursorMoveSpeed);
+            }
+
+            piece = board.GetTilePieceAt((int)currentPosition.y, (int)currentPosition.x);
+            if (piece != null)
+            {
+                piece.GetComponent<ChessPieceProperties>().Select(cursorMoveSpeed);
+            }
+        }
+    }
+}

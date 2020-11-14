@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class ChessManager : MonoBehaviour
 {
+    [SerializeField] private Transform chessPieceHolder;
+ 
     [SerializeField] private GameObject wPawnPrefab, wKnightPrefab, wRookPrefab, wBishopPrefab, wQueenPrefab, wKingPRefab;
     [SerializeField] private GameObject bPawnPrefab, bKnightPrefab, bRookPrefab, bBishopPrefab, bQueenPrefab, bKingPRefab;
 
@@ -80,7 +82,6 @@ public class ChessManager : MonoBehaviour
         // Move all pawn to the correct position
         for (int i = 0; i < 8; i++)
         {
-            Debug.Log(i);
             wPawns[i].transform.DOMove(board.GetTileCenter(1, i), 0.5f, false);
             bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
             board.SetTilePieceAt(1, i, wPawns[i]);
@@ -127,22 +128,24 @@ public class ChessManager : MonoBehaviour
         // Move King and Queen to the correct position
         wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
         wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
-        bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
-        bKing.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
+        bQueen.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
+        bKing.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
         board.SetTilePieceAt(0, 3, wQueen);
         board.SetTilePieceAt(0, 4, wKing);
-        board.SetTilePieceAt(7, 3, bQueen);
-        board.SetTilePieceAt(7, 4, bKing);
+        board.SetTilePieceAt(7, 4, bQueen);
+        board.SetTilePieceAt(7, 3, bKing);
         yield return new WaitForSeconds(0.51f);
 
         // Update it's rendering order. This function should always get called when you move the piece
         foreach (GameObject pieces in whitePieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
+            pieces.transform.SetParent(chessPieceHolder);
         }
         foreach (GameObject pieces in blackPieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
+            pieces.transform.SetParent(chessPieceHolder);
         }
     }
 }
