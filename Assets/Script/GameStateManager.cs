@@ -9,6 +9,7 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] GameObject chessBoard;
     [SerializeField] GameObject cursor;
     [SerializeField] ParticleSystem dust;
+    [SerializeField] UICanvas UICanvas;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +49,10 @@ public class GameStateManager : MonoBehaviour
 
         //AudioManager.Instance.SetMusicVolume(0.5f);
         //AudioManager.Instance.PlayMusicWithFade("theme", 3f);
+
+        yield return new WaitForSeconds(2f);
+
+        UICanvas.CharacterMoveIn(0.5f);
     }
 
     private IEnumerator Shake(Transform target, float magnitude, float time)
