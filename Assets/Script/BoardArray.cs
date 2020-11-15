@@ -63,14 +63,15 @@ public class BoardArray : Singleton<BoardArray>
     //Sets the object reference held at the provided index
     public void SetTilePieceAt(int row, int column, GameObject obj)
     {
+        
         ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
         pieces[this.Index2DToIndex(row, column)] = properties;
 
         if(properties.Type == PieceType.King)
         {
-            if (obj.CompareTag("White"))
+            if (properties.Team == Team.White)
                 wKingIndex = new TileIndex(row, column);
-            else if (obj.CompareTag("Black"))
+            else if (properties.Team == Team.Black)
                 wKingIndex = new TileIndex(row, column);
             else
                 Debug.LogError("Team tag for Object named King did not match.");

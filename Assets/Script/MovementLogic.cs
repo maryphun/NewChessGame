@@ -9,7 +9,6 @@ public class MovementLogic
     //-Castling Logic
     //-Check Logic
     //-Pinned Logic
-    //-Accessors
     
     private TileMask<bool> allThreatenedTileMaskW = new TileMask<bool>();
     private TileMask<bool> allThreatenedTileMaskB = new TileMask<bool>();

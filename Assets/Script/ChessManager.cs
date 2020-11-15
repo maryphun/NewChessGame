@@ -80,7 +80,6 @@ public class ChessManager : MonoBehaviour
         // Move all pawn to the correct position
         for (int i = 0; i < 8; i++)
         {
-            Debug.Log(i);
             wPawns[i].transform.DOMove(board.GetTileCenter(1, i), 0.5f, false);
             bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
             board.SetTilePieceAt(1, i, wPawns[i]);
