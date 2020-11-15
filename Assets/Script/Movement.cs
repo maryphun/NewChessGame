@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    private bool[] allThreatenedTileMaskW = new bool[64];
+    private bool[] allThreatenedTileMaskB = new bool[64]; 
+    
+    private List<TileIndex>[] validTileMoves = new List<TileIndex>[64]; //TODO: Accessors to this will allow quick display of possible moves
 
 
     private enum AlignmentMode
@@ -16,14 +20,48 @@ public class Movement : MonoBehaviour
     }
 
 
-
-    public void CheckValidMove()
+    public void UpdateValidMoves()
     {
-
+        FlagPinnedPieces();
+        GetMovesAndFlagThreatenedTiles();
+        //Needs list of threatened tile mask for calculating king moves
+        //Removes King moving into check and any moves not preventing check if in check
+        RemoveInvalidCheckMoves();
     }
 
-    public void MovePiece()
+    public void GetMovesAndFlagThreatenedTiles()
     {
+        //Clear all current Flags
+        Array.Clear(allThreatenedTileMaskB, 0, allThreatenedTileMaskB.Length);
+        Array.Clear(allThreatenedTileMaskW, 0, allThreatenedTileMaskW.Length);
+        //Clear all move Lists
+        for (int i = 0; i < 64; i++)
+        {
+            if (validTileMoves[i] == null) validTileMoves[i] = new List<TileIndex>();
+            validTileMoves[i].Clear();
+        }
+
+        foreach (TileIndex index in BoardArray.Instance().Indicies)
+        {
+            if (BoardArray.Instance().GetTilePiecePropertiesAt(index) != null)
+            {
+                bool isWhiteTeam = BoardArray.Instance().GetTilePiecePropertiesAt(index).Team == Team.White;
+                (List<TileIndex> moveList, List<TileIndex> threatenedTiles) = CalcTilesThreatenedAndMovesByPiece(index.row, index.col);
+                validTileMoves[BoardArray.Instance().Index2DToIndex(index.row, index.col)] = moveList;
+                foreach (var threat in threatenedTiles)
+                {
+                    if (isWhiteTeam)
+                    {
+                        allThreatenedTileMaskW[BoardArray.Instance().Index2DToIndex(threat.row, threat.col)] = true;
+                    }
+                    else
+                    {
+                        allThreatenedTileMaskB[BoardArray.Instance().Index2DToIndex(threat.row, threat.col)] = true;
+                    }
+                }
+
+            }
+        }
 
     }
 
@@ -53,7 +91,7 @@ public class Movement : MonoBehaviour
                     int checkRow = king.row + rowDir;
                     int teamPieceCount = 0;
                     TileIndex potentialPin = new TileIndex(-1, -1); //no pin state
-                    while (checkCol < 8 && checkCol >= 0 && checkRow < 8 && checkRow >= 0)
+                    while (IsIndexOnBoard(new TileIndex(checkRow, checkCol)))
                     {
                         ChessPieceProperties checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkRow, checkCol);
                         if (!ReferenceEquals(checkPiece, null))
@@ -70,8 +108,6 @@ public class Movement : MonoBehaviour
                                 //Enemy Piece found
                                 if (teamPieceCount == 1)
                                 {
-                                    //Check 
-
                                     if (potentialPin.row != -1) //if there is a potential pin
                                     {
                                         AlignmentMode mode = GetAlignmentMode(potentialPin, king);
@@ -105,113 +141,133 @@ public class Movement : MonoBehaviour
         }
     }
 
-    //returns all the valid moves of the piece at the tile index provided 
-    //public List<TileIndex> GetValidMovesAtTile(int row, int col)
-    //{
-        //ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(row, col);
+    public void RemoveInvalidCheckMoves()
+    {
+        TileIndex wKing = BoardArray.Instance().wKingIndex;
+        TileIndex bKing = BoardArray.Instance().bKingIndex;
+        bool isKingCheckW = allThreatenedTileMaskB[BoardArray.Instance().Index2DToIndex(wKing.row, wKing.col)];
+        bool isKingCheckB = allThreatenedTileMaskW[BoardArray.Instance().Index2DToIndex(bKing.row, bKing.col)];
+        if (isKingCheckW && isKingCheckB) Debug.LogException(new Exception("Both kings flaged as in check"));
+        
+        //TODO: in check logic
+        if (isKingCheckW)
+        {
+            Debug.LogError("Check Situation Not Yet Accounted For");
+        }
+        if (isKingCheckB)
+        {
+            Debug.LogError("Check Situation Not Yet Accounted For");
+        }
 
+        //TODO: Prevent king moving into check
+        Debug.LogError("Moving into Check Not Yet Accounted For");
+    }
 
+    //When is a move invalid?:
 
-        //When is a move invalid?:
+    //If pinned to king All moves not along alignment become invalid: partial TODO
 
-        //If pinned to king All moves not along alignment become invalid: partial TODO
+    //Line of sight Blocked by other piece (excludes knight, pawn (except double move) and king): done
+    //-Check squares from in to out
+    //-When piece is found check team, if enemy count square and stop, otherwise discount square and stop.
 
-        //Line of sight Blocked by other piece (excludes knight, pawn (except double move) and king): done
-        //-Check squares from in to out
-        //-When piece is found check team, if enemy count square and stop, otherwise discount square and stop.
+    //end position blocked by friendly piece: for knight, pawn and king check if each position is occupied by friendly. done.
+    //-Compare possible moves to Bit Mask
 
-        //end position blocked by friendly piece: for knight, pawn and king check if each position is occupied by friendly. done.
-        //-Compare possible moves to Bit Mask
+    //King moving into check: TODO
+    //-Bit Mask for threatened squares this turn, king checks adjacent bits
 
-        //King moving into check: TODO
-        //-Bit Mask for threatened squares this turn, king checks adjacent bits
+    //If King is in check and move does not prevent check: TODO
+    //-Get pieces threatening king
+    //-if more than one force king move
+    //-if only one check move is between king and attacking piece or taking attacking piece, 
 
-        //If King is in check and move does not prevent check: TODO
-        //-Get pieces threatening king
-        //-if more than one force king move
-        //-if only one check move is between king and attacking piece or taking attacking piece, 
+    //Double pawn move: has already moved
+    // -just a flag in properties
 
-        //Double pawn move: has already moved
-        // -just a flag in properties
+    //en passant: pawn has not passed last turn. partial TODO
+    // -flag in pawn properties for used double move last turn
+    // -If pawn directly to the right or left of piece has used enpassant avalible.
 
-        //en passant: pawn has not passed last turn. partial TODO
-        // -flag in pawn properties for used double move last turn
-        // -If pawn directly to the right or left of piece has used enpassant avalible.
-
-        //castling: king has moved, king moves through check, castle has moved
-        //  -has moved as flags
-        //  -king checks same bitmask as above along castle manuver vector
+    //castling: king has moved, king moves through check, castle has moved TODO
+    //  -has moved as flags
+    //  -king checks same bitmask as above along castle manuver vector
 
     //}
 
-    //Calculates a list of possible moves for the piece on the cell provided
-    List<TileIndex> CalcPossiblePieceMoves(int row, int col)
+    //Calculates a list of threatened tiles and possible moves for the piece on the cell provided
+    //Note: Excludes in King moving into check situation as enemy threats are needed
+    //Returns (movesList, threatList)
+    (List<TileIndex>, List<TileIndex>) CalcTilesThreatenedAndMovesByPiece(int row, int col)
     {
+        //TODO: Cashe Each pieces Tiles for movement calculation
         List<TileIndex> moveList = new List<TileIndex>();
+        List<TileIndex> threatList = new List<TileIndex>();
 
         ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(row, col);
         int side = piece.CompareTag("Player Piece") ? 1 : -1; //Enemy pawns move down
-
-
-        if (!piece.isPinned)
+        switch (piece.Type)
         {
-            switch (piece.Type)
-            {
-                case PieceType.Pawn:
-                    AddIfEnemy(new TileIndex(row + 1 * side, col - 1));
-                    AddIfEnemy(new TileIndex(row + 1 * side, col + 1));
-                    if (AddIfNotBlocked(new TileIndex(row + 1 * side, col)))
-                    {
-                        TileIndex tile= new TileIndex(row + 2 * side, col);
-                        if(BoardArray.Instance().GetTilePiecePropertiesAt(tile).isHasMoved)
-                            AddIfNotBlocked(tile);
-                    }
-                    //en passant move
-                    AddIfEnPassant();
-                    AddIfEnPassant();
-                    break;
-                case PieceType.Knight:
-                    for (int i = -1; i <= 1; i += 2)
-                    {
-                        AddIfNotBlocked(new TileIndex(row + 2, col + i));
-                        AddIfNotBlocked(new TileIndex(row + i, col + 2));
-                        AddIfNotBlocked(new TileIndex(row - 2, col + i));
-                        AddIfNotBlocked(new TileIndex(row - i, col + 2));
-                    }
-                    break;
-                case PieceType.Bishop:
-                    AddDiagonalMoves();
-                    break;
-                case PieceType.Rook:
-                    AddCardinalMoves();
-                    break;
-                case PieceType.Queen:
-                    AddCardinalMoves();
-                    AddDiagonalMoves();
-                    break;
-                case PieceType.King:
-                    AddIfNotBlocked(new TileIndex(row + 1, col + 1));
-                    AddIfNotBlocked(new TileIndex(row + 1, col));
-                    AddIfNotBlocked(new TileIndex(row + 1, col - 1));
-                    AddIfNotBlocked(new TileIndex(row, col + 1));
-                    AddIfNotBlocked(new TileIndex(row, col - 1));
-                    AddIfNotBlocked(new TileIndex(row - 1, col + 1));
-                    AddIfNotBlocked(new TileIndex(row - 1, col));
-                    AddIfNotBlocked(new TileIndex(row - 1, col - 1));
-                    break;
-                default:
-                    Debug.LogError("GameObject.name did not match the name of a piece");
-                    break;
-            }
-            
+            case PieceType.Pawn:
+                AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
+                AddMoveIfEnemy(new TileIndex(row + 1 * side, col + 1));
+                if (AddMoveIfNotBlocked(new TileIndex(row + 1 * side, col), false))
+                {
+                    TileIndex tile = new TileIndex(row + 2 * side, col);
+                    if (BoardArray.Instance().GetTilePiecePropertiesAt(tile).isHasMoved)
+                        AddMoveIfNotBlocked(tile, false);
+                }
+                //en passant move
+                AddMoveIfEnPassant();
+                AddMoveIfEnPassant();
+                break;
+            case PieceType.Knight:
+                for (int i = -1; i <= 1; i += 2)
+                {
+                    AddMoveIfNotBlocked(new TileIndex(row + 2, col + i));
+                    AddMoveIfNotBlocked(new TileIndex(row + i, col + 2));
+                    AddMoveIfNotBlocked(new TileIndex(row - 2, col + i));
+                    AddMoveIfNotBlocked(new TileIndex(row - i, col + 2));
+                }
+                break;
+            case PieceType.Bishop:
+                AddDiagonalMovesAndThreats();
+                break;
+            case PieceType.Rook:
+                AddCardinalMovesAndThreats();
+                break;
+            case PieceType.Queen:
+                AddCardinalMovesAndThreats();
+                AddDiagonalMovesAndThreats();
+                break;
+            case PieceType.King:
+                AddMoveIfNotBlocked(new TileIndex(row + 1, col + 1));
+                AddMoveIfNotBlocked(new TileIndex(row + 1, col));
+                AddMoveIfNotBlocked(new TileIndex(row + 1, col - 1));
+                AddMoveIfNotBlocked(new TileIndex(row, col + 1));
+                AddMoveIfNotBlocked(new TileIndex(row, col - 1));
+                AddMoveIfNotBlocked(new TileIndex(row - 1, col + 1));
+                AddMoveIfNotBlocked(new TileIndex(row - 1, col));
+                AddMoveIfNotBlocked(new TileIndex(row - 1, col - 1));
+                break;
+            default:
+                Debug.LogError("GameObject.name did not match the name of a piece");
+                break;
         }
-        return moveList;
 
-        void AddIfEnPassant()
+        if (piece.isPinned)
+        {
+            //TODO remove all moves that do not align with pin
+            Debug.LogError("Pin Situation Not Yet Accounted For");
+        }
+
+        return (moveList, threatList);
+
+        void AddMoveIfEnPassant()
         {
             AddIfEnPassantConditions(new TileIndex(row, col + 1));
             AddIfEnPassantConditions(new TileIndex(row, col - 1));
-           
+
             void AddIfEnPassantConditions(TileIndex index)
             {
                 if (IsIndexOnBoard(index))
@@ -219,57 +275,57 @@ public class Movement : MonoBehaviour
                 var target = BoardArray.Instance().GetTilePiecePropertiesAt(index);
                 if (target != null)
                 {
-                    if (target.Type == PieceType.Pawn) 
+                    if (target.Type == PieceType.Pawn)
                     {
-                        if (target.isHasJustDoubleMoved) 
+                        if (target.isHasJustDoubleMoved)
                         {
-                            AddIfValid(index);
+                            AddMove(new TileIndex(index.row + 1 * side, index.col));
                         }
                     }
                 }
             }
         }
 
-        void AddCardinalMoves()
+        void AddCardinalMovesAndThreats()
         {
             for (int i = row + 1; i < 8; i++)
             {
-                if (!AddIfNotBlocked(new TileIndex(i, col))) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(new TileIndex(i, col))) //If Blocked break loop
                 {
                     break;
                 }
             }
             for (int i = row - 1; i >= 0; i--)
             {
-                if (!AddIfNotBlocked(new TileIndex(i, col))) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(new TileIndex(i, col))) //If Blocked break loop
                 {
                     break;
                 }
             }
             for (int i = col + 1; i < 8; i++)
             {
-                if (!AddIfNotBlocked(new TileIndex(row, i))) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(new TileIndex(row, i))) //If Blocked break loop
                 {
                     break;
                 }
             }
             for (int i = col - 1; i >= 0; i--)
             {
-                if (!AddIfNotBlocked(new TileIndex(row, i))) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(new TileIndex(row, i))) //If Blocked break loop
                 {
                     break;
                 }
             }
         }
-        
-        void AddDiagonalMoves()
+
+        void AddDiagonalMovesAndThreats()
         {
             int diff = 0;
             for (int i = col + 1; i < 8; i++)//cycle columns left
             {
                 diff = i - col;
                 TileIndex checkIndex = new TileIndex(row + diff, col + diff);
-                if (!AddIfNotBlocked(checkIndex)) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(checkIndex)) //If Blocked break loop
                 {
                     break;
                 }
@@ -278,7 +334,7 @@ public class Movement : MonoBehaviour
             {
                 diff = i - col;
                 TileIndex checkIndex = new TileIndex(row - diff, col + diff);
-                if (!AddIfNotBlocked(checkIndex)) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(checkIndex)) //If Blocked break loop
                 {
                     break;
                 }
@@ -287,7 +343,7 @@ public class Movement : MonoBehaviour
             {
                 diff = i - col;
                 TileIndex checkIndex = new TileIndex(row + diff, col + diff);
-                if (!AddIfNotBlocked(checkIndex)) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(checkIndex)) //If Blocked break loop
                 {
                     break;
                 }
@@ -296,7 +352,7 @@ public class Movement : MonoBehaviour
             {
                 diff = i - col;
                 TileIndex checkIndex = new TileIndex(row - diff, col + diff);
-                if (!AddIfNotBlocked(checkIndex)) //If Blocked break loop
+                if (!AddMoveIfNotBlocked(checkIndex)) //If Blocked break loop
                 {
                     break;
                 }
@@ -304,17 +360,20 @@ public class Movement : MonoBehaviour
         }
 
         //Adds move if enemy present, returns true when added
-        bool AddIfEnemy(TileIndex checkIndex)
+        bool AddMoveIfEnemy(TileIndex checkIndex, bool isAddThreat = true)
         {
             if (IsIndexOnBoard(checkIndex))
                 return false;
             ChessPieceProperties checkPiece;
             checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkIndex);
+
+            if (isAddThreat) AddThreat(checkIndex); //Squares Always threatened but move only valid when piece present;
+
             if (checkPiece != null)
             {
                 if (checkPiece.Team != piece.Team) //if enemy piece, add then break
                 {
-                    AddIfValid(checkIndex);
+                    AddMove(checkIndex);
                     return true;
                 }
             }
@@ -322,30 +381,40 @@ public class Movement : MonoBehaviour
         }
 
         //Adds move if not blocked by piece, Returns false if should break loop due to block
-        bool AddIfNotBlocked(TileIndex checkIndex)
+        bool AddMoveIfNotBlocked(TileIndex checkIndex, bool isAddThreat = true)
         {
             if (IsIndexOnBoard(checkIndex))
                 return false;
             ChessPieceProperties checkPiece;
             checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkIndex);
+
+            //Can threaten squares occupied by friendly but not move there
+            if (isAddThreat) AddThreat(checkIndex);
+
             if (checkPiece != null)
             {
                 if (checkPiece.Team != piece.Team) //if enemy piece blocking, add then break
                 {
-                    AddIfValid(checkIndex);
+                    AddMove(checkIndex);
                 }
+
                 return false;
             }
-            AddIfValid(checkIndex);
+            AddMove(checkIndex);
             return true;
         }
 
         //performs Any final checks and adds to list
-        bool AddIfValid(TileIndex index)
+        bool AddMove(TileIndex index)
         {
             bool isValid = true;
             moveList.Add(index);
             return isValid;
+        }
+
+        void AddThreat(TileIndex index)
+        {
+            threatList.Add(index);
         }
     }
 

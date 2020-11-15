@@ -25,7 +25,21 @@ public class BoardArray : Singleton<BoardArray>
 {
     private Vector2[] tileCenterPosition; //this is worldspace position
     private ChessPieceProperties[] pieces;
-    
+
+    public TileIndex[] Indicies { //TODO: make cashed so does not need be calculated every time called
+        get
+        {
+            var indicies = new TileIndex[64];
+            for(int i = 0; i<8; i++)
+            {
+                for(int j = 0; j<8; j++)
+                {
+                    indicies[Index2DToIndex(i, j)] = new TileIndex(i, j);
+                }
+            }
+            return indicies;
+        } 
+    }
 
     public TileIndex wKingIndex { get; private set; }
     public TileIndex bKingIndex { get; private set; }
@@ -112,7 +126,8 @@ public class BoardArray : Singleton<BoardArray>
         return tileCenterPosition[Index2DToIndex(row, column)];
     }
 
-    //POSITIONAL CHECKS
+    //------POSITIONAL CHECKS--------
+
     //returns true if the target tile is occupied by a Enemy piece
     public bool IsOccupiedByEnemy(TileIndex index, Team team)
     {
@@ -132,7 +147,7 @@ public class BoardArray : Singleton<BoardArray>
     }
 
     //Converts Index from row and column format to array format
-    private int Index2DToIndex(int row, int column)
+    public int Index2DToIndex(int row, int column)
     {
         if (row > 7 || column > 7 || row < 0 || column < 0)
         {
