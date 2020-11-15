@@ -3,13 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class MovementLogic
 {
-    private bool[] allThreatenedTileMaskW = new bool[64];
-    private bool[] allThreatenedTileMaskB = new bool[64]; 
+    //TODOList:
+    //-Castling Logic
+    //-Check Logic
+    //-Pinned Logic
+    //-Accessors
     
-    private List<TileIndex>[] validTileMoves = new List<TileIndex>[64]; //TODO: Accessors to this will allow quick display of possible moves
-
+    private TileMask<bool> allThreatenedTileMaskW = new TileMask<bool>();
+    private TileMask<bool> allThreatenedTileMaskB = new TileMask<bool>();
+    private MoveListTileMask allMoves = new MoveListTileMask(); //TODO: Accessors to this will allow quick display of possible moves
 
     private enum AlignmentMode
     {
@@ -19,26 +23,30 @@ public class Movement : MonoBehaviour
         Both,
     }
 
+    public List<TileIndex> GetValidMoves(TileIndex index)
+    {
+        return allMoves[index];
+    }
 
+    //Call this after a move is made
     public void UpdateValidMoves()
     {
         FlagPinnedPieces();
-        GetMovesAndFlagThreatenedTiles();
+        CalcMovesAndFlagThreatenedTiles();
         //Needs list of threatened tile mask for calculating king moves
         //Removes King moving into check and any moves not preventing check if in check
         RemoveInvalidCheckMoves();
     }
 
-    public void GetMovesAndFlagThreatenedTiles()
+    private void CalcMovesAndFlagThreatenedTiles()
     {
         //Clear all current Flags
-        Array.Clear(allThreatenedTileMaskB, 0, allThreatenedTileMaskB.Length);
-        Array.Clear(allThreatenedTileMaskW, 0, allThreatenedTileMaskW.Length);
+        allThreatenedTileMaskB.Clear();
+        allThreatenedTileMaskW.Clear();
         //Clear all move Lists
         for (int i = 0; i < 64; i++)
         {
-            if (validTileMoves[i] == null) validTileMoves[i] = new List<TileIndex>();
-            validTileMoves[i].Clear();
+            allMoves[i].Clear();
         }
 
         foreach (TileIndex index in BoardArray.Instance().Indicies)
@@ -47,16 +55,16 @@ public class Movement : MonoBehaviour
             {
                 bool isWhiteTeam = BoardArray.Instance().GetTilePiecePropertiesAt(index).Team == Team.White;
                 (List<TileIndex> moveList, List<TileIndex> threatenedTiles) = CalcTilesThreatenedAndMovesByPiece(index.row, index.col);
-                validTileMoves[BoardArray.Instance().Index2DToIndex(index.row, index.col)] = moveList;
+                allMoves[index] = moveList;
                 foreach (var threat in threatenedTiles)
                 {
                     if (isWhiteTeam)
                     {
-                        allThreatenedTileMaskW[BoardArray.Instance().Index2DToIndex(threat.row, threat.col)] = true;
+                        allThreatenedTileMaskW[threat] = true;
                     }
                     else
                     {
-                        allThreatenedTileMaskB[BoardArray.Instance().Index2DToIndex(threat.row, threat.col)] = true;
+                        allThreatenedTileMaskB[threat] = true;
                     }
                 }
 
@@ -66,7 +74,7 @@ public class Movement : MonoBehaviour
     }
 
     //Sets piece flags for weather piece is pinned or not
-    public void FlagPinnedPieces()
+    private void FlagPinnedPieces()
     {
         //-send vectors from kings position
         //-if hit enemy piece stop
@@ -141,12 +149,12 @@ public class Movement : MonoBehaviour
         }
     }
 
-    public void RemoveInvalidCheckMoves()
+    private void RemoveInvalidCheckMoves()
     {
         TileIndex wKing = BoardArray.Instance().wKingIndex;
         TileIndex bKing = BoardArray.Instance().bKingIndex;
-        bool isKingCheckW = allThreatenedTileMaskB[BoardArray.Instance().Index2DToIndex(wKing.row, wKing.col)];
-        bool isKingCheckB = allThreatenedTileMaskW[BoardArray.Instance().Index2DToIndex(bKing.row, bKing.col)];
+        bool isKingCheckW = allThreatenedTileMaskB[wKing];
+        bool isKingCheckB = allThreatenedTileMaskW[bKing];
         if (isKingCheckW && isKingCheckB) Debug.LogException(new Exception("Both kings flaged as in check"));
         
         //TODO: in check logic
@@ -163,42 +171,10 @@ public class Movement : MonoBehaviour
         Debug.LogError("Moving into Check Not Yet Accounted For");
     }
 
-    //When is a move invalid?:
-
-    //If pinned to king All moves not along alignment become invalid: partial TODO
-
-    //Line of sight Blocked by other piece (excludes knight, pawn (except double move) and king): done
-    //-Check squares from in to out
-    //-When piece is found check team, if enemy count square and stop, otherwise discount square and stop.
-
-    //end position blocked by friendly piece: for knight, pawn and king check if each position is occupied by friendly. done.
-    //-Compare possible moves to Bit Mask
-
-    //King moving into check: TODO
-    //-Bit Mask for threatened squares this turn, king checks adjacent bits
-
-    //If King is in check and move does not prevent check: TODO
-    //-Get pieces threatening king
-    //-if more than one force king move
-    //-if only one check move is between king and attacking piece or taking attacking piece, 
-
-    //Double pawn move: has already moved
-    // -just a flag in properties
-
-    //en passant: pawn has not passed last turn. partial TODO
-    // -flag in pawn properties for used double move last turn
-    // -If pawn directly to the right or left of piece has used enpassant avalible.
-
-    //castling: king has moved, king moves through check, castle has moved TODO
-    //  -has moved as flags
-    //  -king checks same bitmask as above along castle manuver vector
-
-    //}
-
     //Calculates a list of threatened tiles and possible moves for the piece on the cell provided
     //Note: Excludes in King moving into check situation as enemy threats are needed
     //Returns (movesList, threatList)
-    (List<TileIndex>, List<TileIndex>) CalcTilesThreatenedAndMovesByPiece(int row, int col)
+    private (List<TileIndex>, List<TileIndex>) CalcTilesThreatenedAndMovesByPiece(int row, int col)
     {
         //TODO: Cashe Each pieces Tiles for movement calculation
         List<TileIndex> moveList = new List<TileIndex>();
@@ -494,3 +470,35 @@ public class Movement : MonoBehaviour
     }
 
 }
+
+//When is a move invalid?:
+
+//If pinned to king All moves not along alignment become invalid: partial TODO
+
+//Line of sight Blocked by other piece (excludes knight, pawn (except double move) and king): done
+//-Check squares from in to out
+//-When piece is found check team, if enemy count square and stop, otherwise discount square and stop.
+
+//end position blocked by friendly piece: for knight, pawn and king check if each position is occupied by friendly. done.
+//-Compare possible moves to Bit Mask
+
+//King moving into check: TODO
+//-Bit Mask for threatened squares this turn, king checks adjacent bits
+
+//If King is in check and move does not prevent check: TODO
+//-Get pieces threatening king
+//-if more than one force king move
+//-if only one check move is between king and attacking piece or taking attacking piece, 
+
+//Double pawn move: has already moved
+// -just a flag in properties
+
+//en passant: pawn has not passed last turn. partial TODO
+// -flag in pawn properties for used double move last turn
+// -If pawn directly to the right or left of piece has used enpassant avalible.
+
+//castling: king has moved, king moves through check, castle has moved TODO
+//  -has moved as flags
+//  -king checks same bitmask as above along castle manuver vector
+
+//}

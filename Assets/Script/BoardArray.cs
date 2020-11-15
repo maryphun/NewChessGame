@@ -19,6 +19,12 @@ public struct TileIndex
         row = index.row;
         col = index.col;
     }
+
+    public TileIndex(int i)
+    {
+        this = new TileIndex(Utils.IndexToTileIndex(i));
+    }
+
 }
 
 public class BoardArray : Singleton<BoardArray>
@@ -26,18 +32,11 @@ public class BoardArray : Singleton<BoardArray>
     private Vector2[] tileCenterPosition; //this is worldspace position
     private ChessPieceProperties[] pieces;
 
-    public TileIndex[] Indicies { //TODO: make cashed so does not need be calculated every time called
+    private IndexTileMask _indicies;
+    public TileIndex[] Indicies {
         get
         {
-            var indicies = new TileIndex[64];
-            for(int i = 0; i<8; i++)
-            {
-                for(int j = 0; j<8; j++)
-                {
-                    indicies[Index2DToIndex(i, j)] = new TileIndex(i, j);
-                }
-            }
-            return indicies;
+            return _indicies.Mask;
         } 
     }
 
@@ -50,7 +49,9 @@ public class BoardArray : Singleton<BoardArray>
 
     protected override void Awake()
     {
+        
         base.Awake();
+        _indicies = new IndexTileMask();
         tileCenterPosition = new Vector2[64];
         pieces = new ChessPieceProperties[64];
         wKingThreats = new List<TileIndex>();
@@ -63,7 +64,7 @@ public class BoardArray : Singleton<BoardArray>
     public void SetTilePieceAt(int row, int column, GameObject obj)
     {
         ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
-        pieces[Index2DToIndex(row, column)] = properties;
+        pieces[this.Index2DToIndex(row, column)] = properties;
 
         if(properties.Type == PieceType.King)
         {
@@ -79,10 +80,10 @@ public class BoardArray : Singleton<BoardArray>
     //Get the object reference held at the provided index
     public GameObject GetTilePieceAt(int row, int column)
     {
-        if (pieces[Index2DToIndex(row, column)] == null) 
+        if (pieces[this.Index2DToIndex(row, column)] == null) 
             return null;
         
-        return pieces[Index2DToIndex(row, column)].gameObject;
+        return pieces[this.Index2DToIndex(row, column)].gameObject;
     }
     public GameObject GetTilePieceAt(TileIndex index)
     {
@@ -98,7 +99,7 @@ public class BoardArray : Singleton<BoardArray>
     //Get the Properties script held at the provided index
     public ChessPieceProperties GetTilePiecePropertiesAt(int row, int column)
     {
-        return pieces[Index2DToIndex(row, column)];
+        return pieces[this.Index2DToIndex(row, column)];
     }
     public ChessPieceProperties GetTilePiecePropertiesAt(TileIndex index)
     {
@@ -114,7 +115,7 @@ public class BoardArray : Singleton<BoardArray>
         {
             for (int col = 0; col < 8; col++)
             {
-                tileCenterPosition[Index2DToIndex(row, col)] = firstCell + new Vector2(col * tileSize, row * tileSize);
+                tileCenterPosition[this.Index2DToIndex(row, col)] = firstCell + new Vector2(col * tileSize, row * tileSize);
                 //Debug.Log(tileCenterPosition[Index2DToIndex(row, col)]);
             }
         }
@@ -123,7 +124,7 @@ public class BoardArray : Singleton<BoardArray>
     //Returns Tile center position from provided row and column index
     public Vector2 GetTileCenter(int row, int column)
     {
-        return tileCenterPosition[Index2DToIndex(row, column)];
+        return tileCenterPosition[this.Index2DToIndex(row, column)];
     }
 
     //------POSITIONAL CHECKS--------
@@ -149,12 +150,6 @@ public class BoardArray : Singleton<BoardArray>
     //Converts Index from row and column format to array format
     public int Index2DToIndex(int row, int column)
     {
-        if (row > 7 || column > 7 || row < 0 || column < 0)
-        {
-            Debug.LogError("Index Out of Range");
-            return -1;
-        }
-        return column + row * 8;
+        return Utils.Index2DToIndex(row, column);
     }
-
 }
