@@ -7,7 +7,9 @@ public struct TileIndex
 {
     public int row;
     public int col;
-    
+
+    public static TileIndex Null => new TileIndex(-1, -1);
+
     public TileIndex(int r, int c)
     {
         row = r;

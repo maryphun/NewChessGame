@@ -24,7 +24,7 @@ public static class Utils
         if (index > 63 || index < 0)
         {
             Debug.LogError("Index Out of Range");
-            return new TileIndex(-1,-1);
+            return TileIndex.Null;
         }
         return new TileIndex(index/8, index%8);
     }

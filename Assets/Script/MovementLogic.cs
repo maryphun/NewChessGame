@@ -97,7 +97,7 @@ public class MovementLogic
                     int checkCol = king.col + colDir;
                     int checkRow = king.row + rowDir;
                     int teamPieceCount = 0;
-                    TileIndex potentialPin = new TileIndex(-1, -1); //no pin state
+                    TileIndex potentialPin = TileIndex.Null; //no pin state
                     while (IsIndexOnBoard(new TileIndex(checkRow, checkCol)))
                     {
                         ChessPieceProperties checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkRow, checkCol);

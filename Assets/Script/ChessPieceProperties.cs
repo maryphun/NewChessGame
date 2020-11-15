@@ -22,26 +22,26 @@ public enum Team
 
 public class ChessPieceProperties : MonoBehaviour
 {
-    private SpriteRenderer renderer;
+    private SpriteRenderer spriteRenderer;
 
-    [SerializeField] private PieceType _type;
+    [SerializeField] private PieceType _type = default;
     public PieceType Type { get { return _type; } }
 
-    [SerializeField] private Team _team;
+    [SerializeField] private Team _team = default;
     public Team Team { get { return _team; } }
     
     //Flags for positioning
-    [HideInInspector] public bool isPinned;
-    [HideInInspector] public TileIndex pinningPieceIndex;
-    [HideInInspector] public bool isHasMoved;
-    [HideInInspector] public bool isHasJustDoubleMoved;
+    [HideInInspector] public bool isPinned = false;
+    [HideInInspector] public TileIndex pinningPieceIndex = TileIndex.Null;
+    [HideInInspector] public bool isHasMoved = false;
+    [HideInInspector] public bool isHasJustDoubleMoved = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        renderer = GetComponentInChildren<SpriteRenderer>();
-        if (renderer == null)
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (spriteRenderer == null)
         {
             Debug.LogWarning("Graphic reference not found in this chess piece! [" + gameObject.name + "]");
         }
@@ -55,8 +55,8 @@ public class ChessPieceProperties : MonoBehaviour
     /// <returns></returns>
     public int UpdateRenderOrder()
     {
-        renderer.sortingOrder = Mathf.RoundToInt(transform.position.y * -10f);
-        return renderer.sortingOrder;
+        spriteRenderer.sortingOrder = Mathf.RoundToInt(transform.position.y * -10f);
+        return spriteRenderer.sortingOrder;
     }
 
 

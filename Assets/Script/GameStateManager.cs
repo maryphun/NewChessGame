@@ -6,8 +6,8 @@ using DG.Tweening;
 public class GameStateManager : MonoBehaviour
 {
     // Reference
-    [SerializeField] GameObject chessBoard;
-    [SerializeField] ParticleSystem dust;
+    [SerializeField] GameObject chessBoard = default;
+    [SerializeField] ParticleSystem dust = default;
 
     // Start is called before the first frame update
     void Awake()

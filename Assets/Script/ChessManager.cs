@@ -5,8 +5,20 @@ using DG.Tweening;
 
 public class ChessManager : MonoBehaviour
 {
-    [SerializeField] private GameObject wPawnPrefab, wKnightPrefab, wRookPrefab, wBishopPrefab, wQueenPrefab, wKingPRefab;
-    [SerializeField] private GameObject bPawnPrefab, bKnightPrefab, bRookPrefab, bBishopPrefab, bQueenPrefab, bKingPRefab;
+    [SerializeField] private GameObject 
+        wPawnPrefab = default, 
+        wKnightPrefab = default, 
+        wRookPrefab = default , 
+        wBishopPrefab = default, 
+        wQueenPrefab = default, 
+        wKingPRefab = default;
+    [SerializeField] private GameObject 
+        bPawnPrefab = default, 
+        bKnightPrefab = default, 
+        bRookPrefab = default, 
+        bBishopPrefab = default, 
+        bQueenPrefab = default, 
+        bKingPRefab = default;
 
     private GameObject[] wPawns, wKnights, wRooks, wBishops;
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
