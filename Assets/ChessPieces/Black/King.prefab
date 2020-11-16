@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8079859941640425008, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8514691827454974534, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
       propertyPath: m_Name
       value: King
@@ -58,6 +62,18 @@ PrefabInstance:
     - target: {fileID: 9024544425805399838, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: ff5c243ebdc996c4f992c783cf7566f0, type: 3}
+      objectReference: {fileID: 21300000, guid: 3eaca4a24842b3048acfa926366d9874, type: 3}
+    - target: {fileID: 9024544425805399838, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9024544425805399838, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9024544425805399838, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}

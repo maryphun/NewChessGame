@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8079859941640425008, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8514691827454974534, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
       propertyPath: m_Name
       value: Bishop
@@ -58,6 +62,6 @@ PrefabInstance:
     - target: {fileID: 9024544425805399838, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 95f2995a805bb9c48a44e23a56411e05, type: 3}
+      objectReference: {fileID: 21300000, guid: c5e83e1fc61eb8646a1e94df23c9225a, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b489ec8147489043a621ee8d0ddf336, type: 3}

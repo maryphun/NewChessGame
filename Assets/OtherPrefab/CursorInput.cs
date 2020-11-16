@@ -33,6 +33,22 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""9c6473b1-1e95-498a-859c-bd365d4c29ad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""ec2c09a6-8b69-4362-a177-4a223dd8bc12"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -53,7 +69,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveVertical"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -64,7 +80,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveVertical"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -75,7 +91,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveVertical"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -86,7 +102,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveVertical"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -108,7 +124,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveHorizontal"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -119,7 +135,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveHorizontal"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -130,7 +146,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveHorizontal"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -141,10 +157,65 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""MoveHorizontal"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""211319db-d712-4f1c-9acb-4895b6b24a21"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6407ae0-140a-43f4-8793-5b355e882608"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""98fcc425-152a-4887-ba7c-fc6d6aeeb983"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1fb68b9-65ff-4ef1-aea7-922065444264"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2c09e54e-f824-4381-a730-4def681c8789"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -172,6 +243,8 @@ public class @CursorInput : IInputActionCollection, IDisposable
         m_Default = asset.FindActionMap("Default", throwIfNotFound: true);
         m_Default_MoveVertical = m_Default.FindAction("MoveVertical", throwIfNotFound: true);
         m_Default_MoveHorizontal = m_Default.FindAction("MoveHorizontal", throwIfNotFound: true);
+        m_Default_Confirm = m_Default.FindAction("Confirm", throwIfNotFound: true);
+        m_Default_Cancel = m_Default.FindAction("Cancel", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -223,12 +296,16 @@ public class @CursorInput : IInputActionCollection, IDisposable
     private IDefaultActions m_DefaultActionsCallbackInterface;
     private readonly InputAction m_Default_MoveVertical;
     private readonly InputAction m_Default_MoveHorizontal;
+    private readonly InputAction m_Default_Confirm;
+    private readonly InputAction m_Default_Cancel;
     public struct DefaultActions
     {
         private @CursorInput m_Wrapper;
         public DefaultActions(@CursorInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @MoveVertical => m_Wrapper.m_Default_MoveVertical;
         public InputAction @MoveHorizontal => m_Wrapper.m_Default_MoveHorizontal;
+        public InputAction @Confirm => m_Wrapper.m_Default_Confirm;
+        public InputAction @Cancel => m_Wrapper.m_Default_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -244,6 +321,12 @@ public class @CursorInput : IInputActionCollection, IDisposable
                 @MoveHorizontal.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnMoveHorizontal;
                 @MoveHorizontal.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnMoveHorizontal;
                 @MoveHorizontal.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnMoveHorizontal;
+                @Confirm.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnConfirm;
+                @Confirm.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnConfirm;
+                @Confirm.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnConfirm;
+                @Cancel.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -254,6 +337,12 @@ public class @CursorInput : IInputActionCollection, IDisposable
                 @MoveHorizontal.started += instance.OnMoveHorizontal;
                 @MoveHorizontal.performed += instance.OnMoveHorizontal;
                 @MoveHorizontal.canceled += instance.OnMoveHorizontal;
+                @Confirm.started += instance.OnConfirm;
+                @Confirm.performed += instance.OnConfirm;
+                @Confirm.canceled += instance.OnConfirm;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -271,5 +360,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
     {
         void OnMoveVertical(InputAction.CallbackContext context);
         void OnMoveHorizontal(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
 }

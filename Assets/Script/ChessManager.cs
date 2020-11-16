@@ -86,10 +86,12 @@ public class ChessManager : MonoBehaviour
             bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
             board.SetTilePieceAt(1, i, wPawns[i]);
             board.SetTilePieceAt(6, i, bPawns[i]);
+            AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
             yield return new WaitForSeconds(0.1f);
         }
 
         // Move all Rooks to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 0 : 7;
@@ -102,6 +104,7 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move all Kights to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 1 : 6;
@@ -114,6 +117,7 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move all Bishops to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 2 : 5;
@@ -126,6 +130,7 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move King and Queen to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
         wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
         bQueen.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);

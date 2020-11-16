@@ -20,6 +20,22 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Confirm",
+                    "type": "Button",
+                    "id": "9c6473b1-1e95-498a-859c-bd365d4c29ad",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "ec2c09a6-8b69-4362-a177-4a223dd8bc12",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -40,7 +56,7 @@
                     "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveVertical",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -51,7 +67,7 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveVertical",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -62,7 +78,7 @@
                     "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveVertical",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -73,7 +89,7 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveVertical",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -95,7 +111,7 @@
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveHorizontal",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -106,7 +122,7 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveHorizontal",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -117,7 +133,7 @@
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveHorizontal",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -128,10 +144,65 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "MoveHorizontal",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "211319db-d712-4f1c-9acb-4895b6b24a21",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a6407ae0-140a-43f4-8793-5b355e882608",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "98fcc425-152a-4887-ba7c-fc6d6aeeb983",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b1fb68b9-65ff-4ef1-aea7-922065444264",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c09e54e-f824-4381-a730-4def681c8789",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

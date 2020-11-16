@@ -98,7 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorMoveSpeed: 0.1
   buttonHoldMoveInterval: 0.15
-  buttonHoldMoveTime: 0.65
+  buttonHoldMoveTime: 0.4
   ControlOn: 1
 --- !u!95 &-6653908455464008701
 Animator:

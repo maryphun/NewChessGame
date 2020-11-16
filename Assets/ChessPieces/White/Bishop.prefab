@@ -54,7 +54,11 @@ PrefabInstance:
     - target: {fileID: 2819135733066342111, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 5ed234ad82d164a4688b4eae97e0bfca, type: 3}
+      objectReference: {fileID: 21300000, guid: 91e287ebc8aebb24b96d53b5380788c5, type: 3}
+    - target: {fileID: 3027377289013336049, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3172866539585749895, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
       propertyPath: m_Name
       value: Bishop

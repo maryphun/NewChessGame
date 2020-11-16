@@ -18,6 +18,7 @@ public class CursorController : MonoBehaviour
     private bool buttonClicked;
     private float buttonHoldTime;
     private CursorInput input = null;
+    private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
 
     private CursorInput Input
     {
@@ -37,6 +38,8 @@ public class CursorController : MonoBehaviour
         Input.Default.MoveHorizontal.performed += ctx => MoveCursor(new Vector2(ctx.ReadValue<float>(), 0f));
         Input.Default.MoveVertical.canceled += _ => buttonClicked = false;
         Input.Default.MoveHorizontal.canceled += _ => buttonClicked = false;
+        Input.Default.Confirm.performed += _ => Confirm();
+        Input.Default.Cancel.performed += _ => Cancel();
 
         if (!ControlOn)
         {
@@ -44,6 +47,7 @@ public class CursorController : MonoBehaviour
         }
 
         currentPosition = new Vector2(4, 4);
+        lockedOnPiece = null;
     }
 
     private void OnEnable()
@@ -72,6 +76,51 @@ public class CursorController : MonoBehaviour
                 buttonHoldTime = buttonHoldMoveTime - buttonHoldMoveInterval;
             }
         }
+    }
+
+    private void Confirm()
+    {
+        ChessPieceProperties piece = board.GetTilePieceAt((int)currentPosition.y, (int)currentPosition.x).GetComponent<ChessPieceProperties>();
+        if (piece != null)
+        {
+            // check if the player have already locked on a chess piece
+            if (lockedOnPiece != null)
+            {
+                // check if it is the same chess piece
+                if (piece == lockedOnPiece)
+                {
+                    CancelLockOn(piece);
+                }
+            }
+            else
+            {
+                piece.LockOn(true);
+                // store this piece into memory
+                lockedOnPiece = piece;
+
+                // sound effect
+                AudioManager.Instance.PlaySFX("lockOn", 0.75f);
+            }
+        }
+    }
+
+    private void Cancel()
+    {
+        if (lockedOnPiece != null)
+        {
+            CancelLockOn(lockedOnPiece);
+        }
+    }
+
+    private void CancelLockOn(ChessPieceProperties target)
+    {
+        // cancel lock on
+        target.LockOn(false);
+        // clear memory
+        lockedOnPiece = null;
+
+        // sound effect
+        AudioManager.Instance.PlaySFX("cancellockon", 0.75f);
     }
 
     private void ButtonReleased()
