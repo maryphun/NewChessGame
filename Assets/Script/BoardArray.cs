@@ -27,7 +27,25 @@ public struct TileIndex
         this = new TileIndex(Utils.IndexToTileIndex(i));
     }
 
+    public static TileIndex operator -(TileIndex a)
+        => new TileIndex(-a.row, -a.col);
+
+    public static TileIndex operator +(TileIndex a, TileIndex b)
+        => new TileIndex(a.row + b.row, a.col + b.col);
+
+    public static TileIndex operator -(TileIndex a, TileIndex b)
+        => a + (-b);
+
+    public static bool operator ==(TileIndex a, TileIndex b)
+        => (a.row == b.row && a.col == b.col);
+    public static bool operator !=(TileIndex a, TileIndex b)
+        => !(a==b);
+
+
 }
+
+
+
 
 public class BoardArray : Singleton<BoardArray>
 {

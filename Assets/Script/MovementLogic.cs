@@ -7,9 +7,9 @@ public class MovementLogic
 {
     //TODOList:
     //-Castling Logic
-    //-Check Logic
-    //-Pinned Logic
-    
+    public bool isWInCheck;
+    public bool isBInCheck;
+    private List<TileIndex> piecesAttackingKing;//The pieces causing Check
     private TileMask<bool> allThreatenedTileMaskW = new TileMask<bool>();
     private TileMask<bool> allThreatenedTileMaskB = new TileMask<bool>();
     private MoveListTileMask allMoves = new MoveListTileMask(); //TODO: Accessors to this will allow quick display of possible moves
@@ -37,6 +37,7 @@ public class MovementLogic
         RemoveInvalidCheckMoves();
     }
 
+    //Calculates and Cashes all possible moves and threatened tiles by every piece on the board
     private void CalcMovesAndFlagThreatenedTiles()
     {
         //Clear all current Flags
@@ -47,13 +48,15 @@ public class MovementLogic
         {
             allMoves[i].Clear();
         }
+        //Clear pieces causing check
+        piecesAttackingKing.Clear();
 
         foreach (TileIndex index in BoardArray.Instance().Indicies)
         {
             if (BoardArray.Instance().GetTilePiecePropertiesAt(index) != null)
             {
                 bool isWhiteTeam = BoardArray.Instance().GetTilePiecePropertiesAt(index).Team == Team.White;
-                (List<TileIndex> moveList, List<TileIndex> threatenedTiles) = CalcTilesThreatenedAndMovesByPiece(index.row, index.col);
+                (List<TileIndex> moveList, List<TileIndex> threatenedTiles) = CalcThreatsAndMovesBy(index.row, index.col);
                 allMoves[index] = moveList;
                 foreach (var threat in threatenedTiles)
                 {
@@ -148,32 +151,104 @@ public class MovementLogic
         }
     }
 
+    //Removes moves made invalid by the king being in check or king moving into check
     private void RemoveInvalidCheckMoves()
     {
         TileIndex wKing = BoardArray.Instance().wKingIndex;
         TileIndex bKing = BoardArray.Instance().bKingIndex;
-        bool isKingCheckW = allThreatenedTileMaskB[wKing];
-        bool isKingCheckB = allThreatenedTileMaskW[bKing];
-        if (isKingCheckW && isKingCheckB) Debug.LogException(new Exception("Both kings flaged as in check"));
+        isWInCheck = allThreatenedTileMaskB[wKing];
+        isBInCheck = allThreatenedTileMaskW[bKing];
+        if (isWInCheck && isBInCheck) Debug.LogException(new Exception("Both kings flagged as in check"));
+
+        //In check logic
+        if (isWInCheck) FilterCheckResolvingMoves(wKing);
+        if (isBInCheck) FilterCheckResolvingMoves(bKing);
+
         
-        //TODO: in check logic
-        if (isKingCheckW)
+        PreventMoveIntoCheck(bKing, allThreatenedTileMaskW);
+        PreventMoveIntoCheck(wKing, allThreatenedTileMaskB);
+
+        //Prevent king moving into check by removing moves to threatened tiles
+        void PreventMoveIntoCheck(TileIndex king, TileMask<bool> threats) 
         {
-            Debug.LogError("Check Situation Not Yet Accounted For");
-        }
-        if (isKingCheckB)
-        {
-            Debug.LogError("Check Situation Not Yet Accounted For");
+            for(int i = allMoves[king].Count-1; i>=0; i--) 
+            {
+                if (threats[allMoves[king][i]])
+                {
+                    allMoves[king].RemoveAt(i);
+                }
+            }
         }
 
-        //TODO: Prevent king moving into check
-        Debug.LogError("Moving into Check Not Yet Accounted For");
+        //Removes all moves that do not resolve check from Valid move lists
+        void FilterCheckResolvingMoves(TileIndex king)
+        {
+            if (piecesAttackingKing.Count == 0)
+                Debug.LogException(new Exception("Attempted to resolve check where there is no attacking piece."));
+
+            var kingProperties = BoardArray.Instance().GetTilePiecePropertiesAt(king);
+            bool isOneThreat = piecesAttackingKing.Count == 1;
+            //Calculate Mask for valid moves
+            TileMask<bool> validMovesMask = new TileMask<bool>(); //-declare
+            //-If the number of attacking pieces is 1, allow blocking or taking threat
+            if (isOneThreat)
+            {
+                TileIndex threat = piecesAttackingKing[0];
+                var threatInfo = BoardArray.Instance().GetTilePiecePropertiesAt(threat);
+
+                //For all single threats the attacking piece can be taken
+                validMovesMask[threat] = true;
+
+                //For Bishop queen and rook points between their line of sight are still valid
+                if (threatInfo.Type == PieceType.Bishop || threatInfo.Type == PieceType.Rook || threatInfo.Type == PieceType.Queen)
+                {
+                    foreach (TileIndex point in GetPointsBetween(king, threat))
+                    {
+                        validMovesMask[point] = true;
+                    };
+                }
+                //Apply mask to all team pieces other than king
+            }
+
+            List<TileIndex> kingMovesCashe = allMoves[king];
+            for (int i = 0; i < allMoves.Length; i++)
+            {
+                if (Utils.IndexToTileIndex(i) != king)
+                {
+                    ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
+                    if (piece != null)
+                    {
+                        if (piece.Team == kingProperties.Team)
+                        {
+                            if (isOneThreat)
+                            {
+                                //For one threat Apply mask to all team pieces other than king
+                                for (int j = allMoves.Length - 1; j >= 0; j--)
+                                {
+                                    if (!validMovesMask[allMoves[i][j]]) 
+                                    {
+                                        allMoves[i].RemoveAt(j);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //More than one threat, force move king
+                                allMoves[i].Clear();
+                            }
+
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     //Calculates a list of threatened tiles and possible moves for the piece on the cell provided
     //Note: Excludes in King moving into check situation as enemy threats are needed
     //Returns (movesList, threatList)
-    private (List<TileIndex>, List<TileIndex>) CalcTilesThreatenedAndMovesByPiece(int row, int col)
+    private (List<TileIndex>, List<TileIndex>) CalcThreatsAndMovesBy(int row, int col)
     {
         //TODO: Cashe Each pieces Tiles for movement calculation
         List<TileIndex> moveList = new List<TileIndex>();
@@ -181,6 +256,7 @@ public class MovementLogic
 
         ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(row, col);
         int side = piece.CompareTag("Player Piece") ? 1 : -1; //Enemy pawns move down
+
         switch (piece.Type)
         {
             case PieceType.Pawn:
@@ -226,14 +302,25 @@ public class MovementLogic
                 AddMoveIfNotBlocked(new TileIndex(row - 1, col - 1));
                 break;
             default:
-                Debug.LogError("GameObject.name did not match the name of a piece");
+                Debug.LogError(piece.name + " has no piece type assigned.");
                 break;
         }
 
         if (piece.isPinned)
         {
             //TODO remove all moves that do not align with pin
-            Debug.LogError("Pin Situation Not Yet Accounted For");
+            //Debug.LogError("Pin Situation Not Yet Accounted For");
+            TileIndex king = piece.Team == Team.White ? BoardArray.Instance().wKingIndex : BoardArray.Instance().bKingIndex;
+            List<TileIndex> tmpList = new List<TileIndex>();
+            foreach (TileIndex point in GetPointsBetween(king, new TileIndex(row, col))) 
+            {
+                if (moveList.Contains(point))
+                {
+                    tmpList.Add(point);
+                }
+            }
+            moveList.Clear();
+            moveList = tmpList;
         }
 
         return (moveList, threatList);
@@ -254,7 +341,9 @@ public class MovementLogic
                     {
                         if (target.isHasJustDoubleMoved)
                         {
-                            AddMove(new TileIndex(index.row + 1 * side, index.col));
+                            TileIndex tmpIndex = new TileIndex(index.row + 1 * side, index.col);
+                            if (!moveList.Contains(tmpIndex))
+                                AddMove(tmpIndex);
                         }
                     }
                 }
@@ -389,6 +478,12 @@ public class MovementLogic
 
         void AddThreat(TileIndex index)
         {
+            //Cashe index if piece is checking opposing king
+            ChessPieceProperties king = BoardArray.Instance().GetTilePiecePropertiesAt(index);
+            if (king.Type == PieceType.King && king.Team != piece.Team)
+            {
+                piecesAttackingKing.Add(new TileIndex(row, col));
+            }
             threatList.Add(index);
         }
     }
@@ -398,7 +493,7 @@ public class MovementLogic
         if (a.row == b.row || a.col == b.col)
             return AlignmentMode.Cardinal;
         if (Math.Abs(a.row - b.row) == Math.Abs(a.col - b.col))
-            return AlignmentMode.Cardinal;
+            return AlignmentMode.Diagonal;
         return AlignmentMode.None;
     }
 
@@ -460,6 +555,28 @@ public class MovementLogic
             return a.row < Math.Max(c.row, b.row) && a.row > Math.Min(c.row, b.row);
         }
         return false;
+    }
+
+    public List<TileIndex> GetPointsBetween(TileIndex a, TileIndex b)
+    {
+        TileIndex diff = b - a;
+        if (Math.Abs(diff.row) < 2 && Math.Abs(diff.col) < 2)
+        {
+            Debug.Log("No Points Between Found");
+            return null;
+        }
+
+        List<TileIndex> points = new List<TileIndex>();
+
+        TileIndex increment = new TileIndex(diff.row / Mathf.Abs(diff.row), diff.col / Mathf.Abs(diff.col));
+        TileIndex point = a + increment;
+        while (point != b)
+        {
+            points.Add(point);
+            point += increment;
+        }
+
+        return points;
     }
 
     //returns true if the index is within board bounds
