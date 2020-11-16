@@ -6,7 +6,7 @@ using UnityEngine;
 public class MovementLogic
 {
     //TODOList:
-    //-Castling Logic
+
     public bool isWInCheck;
     public bool isBInCheck;
     private List<TileIndex> piecesAttackingKing;//The pieces causing Check
@@ -35,6 +35,98 @@ public class MovementLogic
         //Needs list of threatened tile mask for calculating king moves
         //Removes King moving into check and any moves not preventing check if in check
         RemoveInvalidCheckMoves();
+
+        //Castling Logic
+        //Can check bottom and top rows directly
+        AddRowCastleMoves(0);
+        AddRowCastleMoves(7);
+
+        
+
+    }
+
+    //Adds castling moves if king and rooks in their starting positions on the row and are not blocked
+    private void AddRowCastleMoves(int row)
+    {
+        TileIndex kingStartIndex = new TileIndex(row, 4);
+        var king = BoardArray.Instance().GetTilePiecePropertiesAt(kingStartIndex);
+        if (king == null)
+            return;
+
+        TileMask<bool> threats = king.Team == Team.White ? allThreatenedTileMaskB : allThreatenedTileMaskW;
+
+        if (king.Type == PieceType.King && king.isHasMoved == false)
+        {
+            //King is on starting square and hasn't moved
+            var rightRook = BoardArray.Instance().GetTilePiecePropertiesAt(row, 7);
+            var leftRook = BoardArray.Instance().GetTilePiecePropertiesAt(row, 0);
+            if (leftRook != null)
+            {
+                if (leftRook.Type == PieceType.Rook && leftRook.isHasMoved)
+                {
+                    //Left Rook on starting square and hasn't moved
+                    //Check no piece at other squares;
+                    bool isClear = true;
+                    for (int i = 1; i < 4; i++)
+                    {
+                        if (null != BoardArray.Instance().GetTilePiecePropertiesAt(row, i))
+                        {
+                            isClear = false;
+                            break;
+                        }
+                    }
+                    //Block if in check or moving through check
+                    for (int i = 2; i <= 4; i++)
+                    {
+                        if (threats[new TileIndex(row, i)] != false)
+                        {
+                            isClear = false;
+                            break;
+                        }
+                    }
+                    if (isClear)
+                    {
+                        //No piece Obstructions or threats
+                        allMoves[kingStartIndex].Add(new TileIndex(row, 2));
+                    }
+
+                }
+            }
+
+            if (rightRook != null)
+            {
+                if (rightRook.Type == PieceType.Rook && rightRook.isHasMoved)
+                {
+                    //Right Rook on starting square and hasn't moved
+                    //Check no piece at other squares;
+                    bool isClear = true;
+                    for (int i = 7; i > 4; i--)
+                    {
+                        if (null != BoardArray.Instance().GetTilePiecePropertiesAt(row, i))
+                        {
+                            isClear = false;
+                            break;
+                        }
+                    }
+                    //Block if in check or moving through check
+                    for (int i = 6; i >= 4; i--)
+                    {
+                        if (threats[new TileIndex(row, i)] != false)
+                        {
+                            isClear = false;
+                            break;
+                        }
+                    }
+                    if (isClear)
+                    {
+                        //No piece Obstructions or threats
+                        allMoves[kingStartIndex].Add(new TileIndex(row, 6));
+                    }
+
+                }
+            }
+
+        }
     }
 
     //Calculates and Cashes all possible moves and threatened tiles by every piece on the board
@@ -150,7 +242,7 @@ public class MovementLogic
             }
         }
     }
-
+    
     //Removes moves made invalid by the king being in check or king moving into check
     private void RemoveInvalidCheckMoves()
     {
