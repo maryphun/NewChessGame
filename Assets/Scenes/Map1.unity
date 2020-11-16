@@ -391,9 +391,9 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 437665662}
   m_CullTransparentMesh: 0
---- !u!114 &448375019 stripped
+--- !u!114 &448375015 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7198999950168903117, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+  m_CorrespondingSourceObject: {fileID: 448375019, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
   m_PrefabInstance: {fileID: 4809786872634208441}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -1074,7 +1074,7 @@ MonoBehaviour:
   chessBoard: {fileID: 810177403}
   cursor: {fileID: 1943934136}
   dust: {fileID: 6491845401687680021, guid: a4010389c9091c04f93254048a39bbcd, type: 3}
-  UICanvas: {fileID: 448375019}
+  UICanvas: {fileID: 448375015}
 --- !u!114 &936303861
 MonoBehaviour:
   m_ObjectHideFlags: 0
