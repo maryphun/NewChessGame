@@ -9,7 +9,7 @@ public class MovementLogic
 
     public bool isWInCheck;
     public bool isBInCheck;
-    private List<TileIndex> piecesAttackingKing;//The pieces causing Check
+    private List<TileIndex> piecesAttackingKing = new List<TileIndex>();//The pieces causing Check
     private TileMask<bool> allThreatenedTileMaskW = new TileMask<bool>();
     private TileMask<bool> allThreatenedTileMaskB = new TileMask<bool>();
     private MoveListTileMask allMoves = new MoveListTileMask(); //TODO: Accessors to this will allow quick display of possible moves
@@ -40,9 +40,6 @@ public class MovementLogic
         //Can check bottom and top rows directly
         AddRowCastleMoves(0);
         AddRowCastleMoves(7);
-
-        
-
     }
 
     //Adds castling moves if king and rooks in their starting positions on the row and are not blocked
