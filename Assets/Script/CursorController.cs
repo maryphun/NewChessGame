@@ -80,9 +80,10 @@ public class CursorController : MonoBehaviour
 
     private void Confirm()
     {
-        ChessPieceProperties piece = board.GetTilePieceAt((int)currentPosition.y, (int)currentPosition.x).GetComponent<ChessPieceProperties>();
-        if (piece != null)
+        GameObject tmp = board.GetTilePieceAt((int)currentPosition.y, (int)currentPosition.x);
+        if (tmp != null)
         {
+            ChessPieceProperties piece = tmp.GetComponent<ChessPieceProperties>();
             // check if the player have already locked on a chess piece
             if (lockedOnPiece != null)
             {

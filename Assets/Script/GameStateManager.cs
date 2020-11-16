@@ -50,7 +50,7 @@ public class GameStateManager : MonoBehaviour
         //AudioManager.Instance.SetMusicVolume(0.5f);
         //AudioManager.Instance.PlayMusicWithFade("theme", 3f);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
 
         UICanvas.CharacterMoveIn(0.5f);
     }
