@@ -30,6 +30,17 @@ public class MovementLogic
     //Call this after a move is made
     public void UpdateValidMoves()
     {
+        //Clear pinned piece flags
+        for (int i = 0; i < 64; i++)
+        {
+            var tmpPiece = BoardArray.Instance().GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
+            if (tmpPiece != null)
+            {
+                tmpPiece.isPinned = false;
+                tmpPiece.pinningPieceIndex = TileIndex.Null;
+            }
+        }
+
         Debug.Log("Update valid move");
         FlagPinnedPieces();
         Debug.Log("1");
@@ -200,7 +211,7 @@ public class MovementLogic
         //-if hit enemy queen bishop or rook get the alignment type
         //-set pinned if correct type
         TileIndex wKing = BoardArray.Instance().wKingIndex;
-        TileIndex bKing = BoardArray.Instance().wKingIndex;
+        TileIndex bKing = BoardArray.Instance().bKingIndex;
         FlagPinnedPieces(wKing);
         FlagPinnedPieces(bKing);
 
@@ -313,7 +324,7 @@ public class MovementLogic
             //-If the number of attacking pieces is 1, allow blocking or taking threat
             if (isOneThreat)
             {
-                Debug.Log("One King Threat Detected");
+                //Debug.Log("One King Threat Detected");
                 TileIndex threat = piecesAttackingKing[0];
                 var threatInfo = BoardArray.Instance().GetTilePiecePropertiesAt(threat);
 
@@ -430,19 +441,26 @@ public class MovementLogic
 
         if (piece.isPinned)
         {
-            //TODO remove all moves that do not align with pin
+            
             //Debug.LogError("Pin Situation Not Yet Accounted For");
             TileIndex king = piece.Team == Team.White ? BoardArray.Instance().wKingIndex : BoardArray.Instance().bKingIndex;
-            List<TileIndex> tmpList = new List<TileIndex>();
-            foreach (TileIndex point in GetPointsBetween(king, new TileIndex(row, col))) 
+            if (piece.pinningPieceIndex != TileIndex.Null)
             {
-                if (moveList.Contains(point))
+                List<TileIndex> tmpList = new List<TileIndex>();
+                foreach (TileIndex point in GetPointsBetween(king, piece.pinningPieceIndex))
                 {
-                    tmpList.Add(point);
+                    if (moveList.Contains(point))
+                    {
+                        tmpList.Add(point);
+                    }
                 }
+                moveList.Clear();
+                moveList = tmpList;
             }
-            moveList.Clear();
-            moveList = tmpList;
+            else
+            {
+                Debug.LogError("Piece was flagged as pinned but no pinning piece reference was set");
+            }
         }
 
         return (moveList, threatList);
@@ -688,14 +706,14 @@ public class MovementLogic
 
     public List<TileIndex> GetPointsBetween(TileIndex a, TileIndex b)
     {
+        List<TileIndex> points = new List<TileIndex>();
+
         TileIndex diff = b - a;
         if (Math.Abs(diff.row) < 2 && Math.Abs(diff.col) < 2)
         {
             Debug.Log("No Points Between Found");
-            return null;
+            return points;
         }
-
-        List<TileIndex> points = new List<TileIndex>();
 
         TileIndex increment = new TileIndex(diff.row / Mathf.Abs(diff.row), diff.col / Mathf.Abs(diff.col));
         TileIndex point = a + increment;
