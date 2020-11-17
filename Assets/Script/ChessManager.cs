@@ -19,6 +19,7 @@ public class ChessManager : MonoBehaviour
         bBishopPrefab = default, 
         bQueenPrefab = default, 
         bKingPRefab = default;
+    [SerializeField] private Transform chessPieceHolder;
 
     private GameObject[] wPawns, wKnights, wRooks, wBishops;
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
@@ -96,10 +97,12 @@ public class ChessManager : MonoBehaviour
             bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
             board.SetTilePieceAt(1, i, wPawns[i]);
             board.SetTilePieceAt(6, i, bPawns[i]);
+            AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
             yield return new WaitForSeconds(0.1f);
         }
 
         // Move all Rooks to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 0 : 7;
@@ -112,6 +115,7 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move all Kights to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 1 : 6;
@@ -124,6 +128,7 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move all Bishops to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 2 : 5;
@@ -136,24 +141,27 @@ public class ChessManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Move King and Queen to the correct position
+        AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
         wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
-        bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
-        bKing.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
+        bQueen.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
+        bKing.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
         board.SetTilePieceAt(0, 3, wQueen);
         board.SetTilePieceAt(0, 4, wKing);
-        board.SetTilePieceAt(7, 3, bQueen);
-        board.SetTilePieceAt(7, 4, bKing);
+        board.SetTilePieceAt(7, 4, bQueen);
+        board.SetTilePieceAt(7, 3, bKing);
         yield return new WaitForSeconds(0.51f);
 
         // Update it's rendering order. This function should always get called when you move the piece
         foreach (GameObject pieces in whitePieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
+            pieces.transform.SetParent(chessPieceHolder);
         }
         foreach (GameObject pieces in blackPieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
+            pieces.transform.SetParent(chessPieceHolder);
         }
     }
 }

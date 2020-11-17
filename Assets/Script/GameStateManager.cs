@@ -8,9 +8,11 @@ public class GameStateManager : MonoBehaviour
     // Reference
     [SerializeField] GameObject chessBoard = default;
     [SerializeField] ParticleSystem dust = default;
+    [SerializeField] GameObject cursor;
+    [SerializeField] UICanvas UICanvas;
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         StartCoroutine(ChessBoardInitiate(chessBoard, 15f, 1f, 0.5f, 1f));
     }
@@ -21,9 +23,13 @@ public class GameStateManager : MonoBehaviour
         animator.Play("Drop");
 
         var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
-        yield return new WaitForSeconds(clipInfo[0].clip.length);
+
+        yield return new WaitForSeconds(clipInfo[0].clip.length * 0.4f);
+        AudioManager.Instance.PlaySFX("whoosh", 0.45f);
+        yield return new WaitForSeconds(clipInfo[0].clip.length * 0.6f);
 
         StartCoroutine(Shake(chessBoard.transform, 0.25f, 0.25f));
+        AudioManager.Instance.PlaySFX("impact");
 
         for (int i = -8; i <= 8; i++)
         {
@@ -38,6 +44,15 @@ public class GameStateManager : MonoBehaviour
 
         StartCoroutine(GetComponent<ChessManager>().InitiateChess());
         chessBoard.GetComponentInChildren<CanvasGroup>().DOFade(1.0f, 3f);
+        cursor.SetActive(true);
+        cursor.GetComponent<SpriteRenderer>().DOFade(1.0f, 2f);
+
+        //AudioManager.Instance.SetMusicVolume(0.5f);
+        //AudioManager.Instance.PlayMusicWithFade("theme", 3f);
+
+        yield return new WaitForSeconds(3f);
+
+        UICanvas.CharacterMoveIn(0.5f);
     }
 
     private IEnumerator Shake(Transform target, float magnitude, float time)
