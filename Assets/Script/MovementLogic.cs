@@ -48,6 +48,24 @@ public class MovementLogic
         Debug.Log("5");
     }
 
+    //Temp Debug function
+    void PrintWhiteThreats()
+    {
+        foreach(TileIndex index in BoardArray.Instance().Indicies)
+        {
+            Debug.Log("White Threats, Tile: " + index.row + ", " + index.col + " Threatened: " + allThreatenedTileMaskW[index]);
+        }
+    }
+    //Temp Debug function
+    void PrintBlackThreats()
+    {
+        foreach (TileIndex index in BoardArray.Instance().Indicies)
+        {
+            Debug.Log("Black Threats, Tile: " + index.row + ", " + index.col + " Threatened: " + allThreatenedTileMaskB[index]);
+        }
+    }
+
+
     //Adds castling moves if king and rooks in their starting positions on the row and are not blocked
     private void AddRowCastleMoves(int row)
     {
@@ -161,13 +179,13 @@ public class MovementLogic
                     }
                     else
                     {
+                        //Debug.Log("black threat " + index.row + ", "+ index.col + " added");
                         allThreatenedTileMaskB[threat] = true;
                     }
                 }
 
             }
         }
-
     }
 
     //Sets piece flags for weather piece is pinned or not
@@ -251,10 +269,12 @@ public class MovementLogic
     {
         TileIndex wKing = BoardArray.Instance().wKingIndex;
         TileIndex bKing = BoardArray.Instance().bKingIndex;
+        Debug.Log("White King Position" + wKing.row + ", " + wKing.col);
         isWInCheck = allThreatenedTileMaskB[wKing];
         isBInCheck = allThreatenedTileMaskW[bKing];
         if (isWInCheck && isBInCheck) Debug.LogException(new Exception("Both kings flagged as in check"));
 
+        Debug.Log("Check State, White: " + isWInCheck + ", Black:" + isBInCheck);
         //In check logic
         if (isWInCheck) FilterCheckResolvingMoves(wKing);
         if (isBInCheck) FilterCheckResolvingMoves(bKing);
@@ -279,7 +299,10 @@ public class MovementLogic
         void FilterCheckResolvingMoves(TileIndex king)
         {
             if (piecesAttackingKing.Count == 0)
+            {
                 Debug.LogException(new Exception("Attempted to resolve check where there is no attacking piece."));
+            }
+                
 
             var kingProperties = BoardArray.Instance().GetTilePiecePropertiesAt(king);
             bool isOneThreat = piecesAttackingKing.Count == 1;

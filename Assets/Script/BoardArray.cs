@@ -10,8 +10,7 @@ using UnityEngine;
 
 public class BoardArray : Singleton<BoardArray>
 {
-    private Vector2[] tileCenterPosition; //this is worldspace position
-    private ChessPieceProperties[] pieces;
+
 
     private IndexTileMask _indicies;
     public TileIndex[] Indicies {
@@ -23,10 +22,14 @@ public class BoardArray : Singleton<BoardArray>
 
     public TileIndex wKingIndex { get; private set; }
     public TileIndex bKingIndex { get; private set; }
+
     public List<TileIndex> wKingThreats;
     public List<TileIndex> bKingThreats;
 
     private const float tileSize = 1f; //changes spacing of tile centers
+
+    private Vector2[] tileCenterPosition; //this is worldspace position
+    private ChessPieceProperties[] pieces;
 
     protected override void Awake()
     {
@@ -37,7 +40,6 @@ public class BoardArray : Singleton<BoardArray>
         pieces = new ChessPieceProperties[64];
         wKingThreats = new List<TileIndex>();
         bKingThreats = new List<TileIndex>();
-
         UpdateTileCenters();
     }
     
@@ -47,13 +49,12 @@ public class BoardArray : Singleton<BoardArray>
         
         ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
         pieces[this.Index2DToIndex(row, column)] = properties;
-
         if(properties.Type == PieceType.King)
         {
             if (properties.Team == Team.White)
                 wKingIndex = new TileIndex(row, column);
             else if (properties.Team == Team.Black)
-                wKingIndex = new TileIndex(row, column);
+                bKingIndex = new TileIndex(row, column);
             else
                 Debug.LogError("Team tag for Object named King did not match.");
         }

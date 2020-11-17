@@ -144,12 +144,12 @@ public class ChessManager : MonoBehaviour
         AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
         wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
-        bQueen.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
-        bKing.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
+        bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
+        bKing.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
         board.SetTilePieceAt(0, 3, wQueen);
         board.SetTilePieceAt(0, 4, wKing);
-        board.SetTilePieceAt(7, 4, bQueen);
-        board.SetTilePieceAt(7, 3, bKing);
+        board.SetTilePieceAt(7, 3, bQueen);
+        board.SetTilePieceAt(7, 4, bKing);
         yield return new WaitForSeconds(0.51f);
 
         // Update it's rendering order. This function should always get called when you move the piece
