@@ -30,16 +30,22 @@ public class MovementLogic
     //Call this after a move is made
     public void UpdateValidMoves()
     {
+        Debug.Log("Update valid move");
         FlagPinnedPieces();
+        Debug.Log("1");
         CalcMovesAndFlagThreatenedTiles();
+        Debug.Log("2");
         //Needs list of threatened tile mask for calculating king moves
         //Removes King moving into check and any moves not preventing check if in check
         RemoveInvalidCheckMoves();
+        Debug.Log("3");
 
         //Castling Logic
         //Can check bottom and top rows directly
         AddRowCastleMoves(0);
+        Debug.Log("4");
         AddRowCastleMoves(7);
+        Debug.Log("5");
     }
 
     //Adds castling moves if king and rooks in their starting positions on the row and are not blocked
@@ -349,13 +355,18 @@ public class MovementLogic
         switch (piece.Type)
         {
             case PieceType.Pawn:
-                AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
+                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col + 1));
                 if (AddMoveIfNotBlocked(new TileIndex(row + 1 * side, col), false))
                 {
                     TileIndex tile = new TileIndex(row + 2 * side, col);
-                    if (BoardArray.Instance().GetTilePiecePropertiesAt(tile).isHasMoved)
-                        AddMoveIfNotBlocked(tile, false);
+                    ChessPieceProperties tmp = BoardArray.Instance().GetTilePiecePropertiesAt(tile);
+
+                    if (tmp != null)
+                    {
+                        if (tmp.isHasMoved)
+                            AddMoveIfNotBlocked(tile, false);
+                    }
                 }
                 //en passant move
                 AddMoveIfEnPassant();
@@ -367,7 +378,7 @@ public class MovementLogic
                     AddMoveIfNotBlocked(new TileIndex(row + 2, col + i));
                     AddMoveIfNotBlocked(new TileIndex(row + i, col + 2));
                     AddMoveIfNotBlocked(new TileIndex(row - 2, col + i));
-                    AddMoveIfNotBlocked(new TileIndex(row - i, col + 2));
+                    AddMoveIfNotBlocked(new TileIndex(row - i, col - 2));
                 }
                 break;
             case PieceType.Bishop:
@@ -421,7 +432,7 @@ public class MovementLogic
 
             void AddIfEnPassantConditions(TileIndex index)
             {
-                if (IsIndexOnBoard(index))
+                if (!IsIndexOnBoard(index))
                     return;
                 var target = BoardArray.Instance().GetTilePiecePropertiesAt(index);
                 if (target != null)
@@ -515,7 +526,7 @@ public class MovementLogic
         //Adds move if enemy present, returns true when added
         bool AddMoveIfEnemy(TileIndex checkIndex, bool isAddThreat = true)
         {
-            if (IsIndexOnBoard(checkIndex))
+            if (!IsIndexOnBoard(checkIndex))
                 return false;
             ChessPieceProperties checkPiece;
             checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkIndex);
@@ -536,7 +547,7 @@ public class MovementLogic
         //Adds move if not blocked by piece, Returns false if should break loop due to block
         bool AddMoveIfNotBlocked(TileIndex checkIndex, bool isAddThreat = true)
         {
-            if (IsIndexOnBoard(checkIndex))
+            if (!IsIndexOnBoard(checkIndex))
                 return false;
             ChessPieceProperties checkPiece;
             checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkIndex);
@@ -569,11 +580,14 @@ public class MovementLogic
         {
             //Cashe index if piece is checking opposing king
             ChessPieceProperties king = BoardArray.Instance().GetTilePiecePropertiesAt(index);
-            if (king.Type == PieceType.King && king.Team != piece.Team)
+            if (piece != null && king != null)
             {
-                piecesAttackingKing.Add(new TileIndex(row, col));
+                if (king.Type == PieceType.King && king.Team != piece.Team)
+                {
+                    piecesAttackingKing.Add(new TileIndex(row, col));
+                }
+                threatList.Add(index);
             }
-            threatList.Add(index);
         }
     }
 

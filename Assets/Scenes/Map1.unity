@@ -1104,8 +1104,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chessBoard: {fileID: 810177403}
-  cursor: {fileID: 1943934136}
   dust: {fileID: 6491845401687680021, guid: a4010389c9091c04f93254048a39bbcd, type: 3}
+  cursor: {fileID: 1943934136}
   UICanvas: {fileID: 448375015}
 --- !u!114 &936303861
 MonoBehaviour:
@@ -3954,5 +3954,33 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 7095131482791314780, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 182.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7095131482791314780, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 308.7826
+      objectReference: {fileID: 0}
+    - target: {fileID: 7095131482791314780, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7095131482791314780, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 291.628
+      objectReference: {fileID: 0}
+    - target: {fileID: 8179055851616031481, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.00008
+      objectReference: {fileID: 0}
+    - target: {fileID: 8668600891595467775, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 12812313156ee44429d0dba822b245ed, type: 3}
+    - target: {fileID: 8907407524467982521, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5afcfde7a774df64eac517ebb99a3144, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}

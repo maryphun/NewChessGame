@@ -157,11 +157,13 @@ public class ChessManager : MonoBehaviour
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
             pieces.transform.SetParent(chessPieceHolder);
+            pieces.gameObject.tag = "Player Piece";
         }
         foreach (GameObject pieces in blackPieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
             pieces.transform.SetParent(chessPieceHolder);
         }
+        MovementManager.Instance().logic.UpdateValidMoves();
     }
 }

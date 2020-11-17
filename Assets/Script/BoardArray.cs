@@ -59,6 +59,12 @@ public class BoardArray : Singleton<BoardArray>
         }
     }
 
+    // unregister the piece in this index
+    public void RemoveTilePieceAt(int row, int column)
+    {
+        pieces[this.Index2DToIndex(row, column)] = null;
+    }
+
     //Get the object reference held at the provided index
     public GameObject GetTilePieceAt(int row, int column)
     {

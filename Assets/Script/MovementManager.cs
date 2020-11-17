@@ -4,23 +4,28 @@ using UnityEngine;
 
 public class MovementManager : Singleton<MovementManager>
 {
-    MovementLogic logic;
+    [HideInInspector] public MovementLogic logic;
+    private BoardArray board;
 
     protected override void Awake()
     {
         base.Awake();
         logic = new MovementLogic();
+        board = BoardArray.Instance();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// this only move the chess piece on array side but doesn't move the chess piece visual. 
+    /// This function return the new position this chess should move to.
+    /// </summary>
+    public Vector2 MoveChessPiece(GameObject chess, TileIndex origin, TileIndex target)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // replace and update the data on the array side
+        board.RemoveTilePieceAt(origin.row, origin.col);
+        board.SetTilePieceAt(target.row, target.col, chess);
+        // update
+        logic.UpdateValidMoves();
+        // return new position of the chess piece to move
+        return board.GetTileCenter(target.row, target.col);
     }
 }
