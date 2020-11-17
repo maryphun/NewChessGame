@@ -33,9 +33,13 @@ public class ChessPieceProperties : MonoBehaviour
 
     // private variables
     private float selectionJumpRange = 0.05f;   // the range amount this piece will move upward when it has been selected
-    private SpriteRenderer spriteRenderer;
     private bool selectable;
+
+    // constant variables
+    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer SpriteRenderer { get { return spriteRenderer; } }
     private Vector2 originalGraphicPosition;
+    public Vector2 GraphicPosition { get { return originalGraphicPosition; } }
 
     [SerializeField] private PieceType _type = default;
     public PieceType Type { get { return _type; } }
@@ -63,7 +67,7 @@ public class ChessPieceProperties : MonoBehaviour
         selectable = true;
 
         // store the original position of its graphic at start
-        originalGraphicPosition = spriteRenderer.transform.localPosition;
+        originalGraphicPosition = SpriteRenderer.transform.localPosition;
     }
 
     /// <summary>
@@ -72,8 +76,8 @@ public class ChessPieceProperties : MonoBehaviour
     /// <returns></returns>
     public int UpdateRenderOrder()
     {
-        spriteRenderer.sortingOrder = Mathf.RoundToInt(transform.position.y * -10f);
-        return spriteRenderer.sortingOrder;
+        SpriteRenderer.sortingOrder = Mathf.RoundToInt(transform.position.y * -10f);
+        return SpriteRenderer.sortingOrder;
     }
 
 
@@ -84,12 +88,12 @@ public class ChessPieceProperties : MonoBehaviour
 
     public void Unselect(float speed)
     {
-        spriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y, speed, false);
+        SpriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y, speed, false);
     }
 
     public void Select(float speed)
     {
-        spriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y + selectionJumpRange, speed, false);
+        SpriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y + selectionJumpRange, speed, false);
     }
 
     public void Attacked()
@@ -108,14 +112,14 @@ public class ChessPieceProperties : MonoBehaviour
         float timeElapsed = 0.0f;
 
         // reset the renderer position to 0 so it can spin with a right pivot point
-        spriteRenderer.transform.localPosition = Vector2.zero;
+        SpriteRenderer.transform.localPosition = Vector2.zero;
 
         // dust particle effect
         var effect = Instantiate(dust, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
-        effect.GetComponent<Renderer>().sortingLayerName = spriteRenderer.sortingLayerName;
+        effect.GetComponent<Renderer>().sortingLayerName = SpriteRenderer.sortingLayerName;
         Destroy(effect.gameObject, effect.main.duration);
 
-        spriteRenderer.sortingLayerName = ("FlyingChess");
+        SpriteRenderer.sortingLayerName = ("FlyingChess");
         transform.DOMove(new Vector3(10f * (Random.Range(0, 2) * 2 - 1), transform.position.y + 5f, 0f), time, false);
         selectable = false;
 
@@ -128,7 +132,7 @@ public class ChessPieceProperties : MonoBehaviour
             // create afterimage
             var afterImage = new GameObject(gameObject.name + "'s afterimage");
             var script = afterImage.AddComponent<AfterImage>();
-            script.Initialization(spriteRenderer.transform, 0.1f, 0.5f);
+            script.Initialization(SpriteRenderer.transform, 0.1f, 0.5f);
 
             yield return null;
         } while (timeElapsed < time);
@@ -136,7 +140,7 @@ public class ChessPieceProperties : MonoBehaviour
         //renderer.DOFade(0.0f, 0.2f);
 
         yield return new WaitForSeconds(0.25f);
-        spriteRenderer.DOFade(0.0f, 0.25f);
+        SpriteRenderer.DOFade(0.0f, 0.25f);
 
         selectable = true;
     }
@@ -149,12 +153,12 @@ public class ChessPieceProperties : MonoBehaviour
 
         if (boolean)
         {
-            spriteRenderer.material.SetFloat("_OutlineThickness", outlineThickness);
+            SpriteRenderer.material.SetFloat("_OutlineThickness", outlineThickness);
             lockOn = true;
         }
         else
         {
-            spriteRenderer.material.SetFloat("_OutlineThickness", 0.0f);
+            SpriteRenderer.material.SetFloat("_OutlineThickness", 0.0f);
             lockOn = false;
         }
     }
