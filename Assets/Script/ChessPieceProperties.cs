@@ -24,20 +24,18 @@ public enum Team
 public class ChessPieceProperties : MonoBehaviour
 {
     [Header("Reference")]
-    [SerializeField] private GameObject dust;
+    [SerializeField] private GameObject dust = default;
 
     [Header("Lock On Highlight")]
     [SerializeField] private float outlineThickness;
     private bool lockOn;
+    public bool IsLockedOn { get { return lockOn; } }
 
+    // private variables
     private float selectionJumpRange = 0.05f;   // the range amount this piece will move upward when it has been selected
-    private SpriteRenderer renderer;
-
-    private bool selectable;
-
-    Vector2 originalGraphicPosition;
-
     private SpriteRenderer spriteRenderer;
+    private bool selectable;
+    private Vector2 originalGraphicPosition;
 
     [SerializeField] private PieceType _type = default;
     public PieceType Type { get { return _type; } }
@@ -65,7 +63,7 @@ public class ChessPieceProperties : MonoBehaviour
         selectable = true;
 
         // store the original position of its graphic at start
-        originalGraphicPosition = renderer.transform.localPosition;
+        originalGraphicPosition = spriteRenderer.transform.localPosition;
     }
 
     /// <summary>
@@ -86,12 +84,12 @@ public class ChessPieceProperties : MonoBehaviour
 
     public void Unselect(float speed)
     {
-        renderer.transform.DOLocalMoveY(originalGraphicPosition.y, speed, false);
+        spriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y, speed, false);
     }
 
     public void Select(float speed)
     {
-        renderer.transform.DOLocalMoveY(originalGraphicPosition.y + selectionJumpRange, speed, false);
+        spriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y + selectionJumpRange, speed, false);
     }
 
     public void Attacked()
@@ -110,14 +108,14 @@ public class ChessPieceProperties : MonoBehaviour
         float timeElapsed = 0.0f;
 
         // reset the renderer position to 0 so it can spin with a right pivot point
-        renderer.transform.localPosition = Vector2.zero;
+        spriteRenderer.transform.localPosition = Vector2.zero;
 
         // dust particle effect
         var effect = Instantiate(dust, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
-        effect.GetComponent<Renderer>().sortingLayerName = renderer.sortingLayerName;
+        effect.GetComponent<Renderer>().sortingLayerName = spriteRenderer.sortingLayerName;
         Destroy(effect.gameObject, effect.main.duration);
 
-        renderer.sortingLayerName = ("FlyingChess");
+        spriteRenderer.sortingLayerName = ("FlyingChess");
         transform.DOMove(new Vector3(10f * (Random.Range(0, 2) * 2 - 1), transform.position.y + 5f, 0f), time, false);
         selectable = false;
 
@@ -130,7 +128,7 @@ public class ChessPieceProperties : MonoBehaviour
             // create afterimage
             var afterImage = new GameObject(gameObject.name + "'s afterimage");
             var script = afterImage.AddComponent<AfterImage>();
-            script.Initialization(renderer.transform, 0.1f, 0.5f);
+            script.Initialization(spriteRenderer.transform, 0.1f, 0.5f);
 
             yield return null;
         } while (timeElapsed < time);
@@ -138,7 +136,7 @@ public class ChessPieceProperties : MonoBehaviour
         //renderer.DOFade(0.0f, 0.2f);
 
         yield return new WaitForSeconds(0.25f);
-        renderer.DOFade(0.0f, 0.25f);
+        spriteRenderer.DOFade(0.0f, 0.25f);
 
         selectable = true;
     }
@@ -151,18 +149,13 @@ public class ChessPieceProperties : MonoBehaviour
 
         if (boolean)
         {
-            renderer.material.SetFloat("_OutlineThickness", outlineThickness);
+            spriteRenderer.material.SetFloat("_OutlineThickness", outlineThickness);
             lockOn = true;
         }
         else
         {
-            renderer.material.SetFloat("_OutlineThickness", 0.0f);
+            spriteRenderer.material.SetFloat("_OutlineThickness", 0.0f);
             lockOn = false;
         }
-    }
-
-    public bool IsLockedOn()
-    {
-        return lockOn;
     }
 }

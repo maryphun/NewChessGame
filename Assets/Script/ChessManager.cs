@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class ChessManager : MonoBehaviour
 {
+    [SerializeField] private Transform chessPieceHolder = default;
     [SerializeField] private GameObject 
         wPawnPrefab = default, 
         wKnightPrefab = default, 
@@ -19,7 +20,6 @@ public class ChessManager : MonoBehaviour
         bBishopPrefab = default, 
         bQueenPrefab = default, 
         bKingPRefab = default;
-    [SerializeField] private Transform chessPieceHolder;
 
     private GameObject[] wPawns, wKnights, wRooks, wBishops;
     private GameObject[] bPawns, bKnights, bRooks, bBishops;

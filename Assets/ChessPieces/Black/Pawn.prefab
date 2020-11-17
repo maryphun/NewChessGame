@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: outlineThickness
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -1748699395019636890, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
+      propertyPath: _team
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2503777843640569110, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

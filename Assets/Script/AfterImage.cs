@@ -7,7 +7,7 @@ public class AfterImage : MonoBehaviour
 {
     SpriteRenderer copy;
 
-    float totalTime, timeElapsed, originAlpha;
+    private float totalTime, timeElapsed, originAlpha;
 
     public void Initialization(Transform origin, float time, float initiateAlpha)
     {

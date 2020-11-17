@@ -8,8 +8,8 @@ public class GameStateManager : MonoBehaviour
     // Reference
     [SerializeField] GameObject chessBoard = default;
     [SerializeField] ParticleSystem dust = default;
-    [SerializeField] GameObject cursor;
-    [SerializeField] UICanvas UICanvas;
+    [SerializeField] GameObject cursor = default;
+    [SerializeField] UICanvas UICanvas = default;
 
     // Start is called before the first frame update
     void Start()

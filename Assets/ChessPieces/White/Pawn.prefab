@@ -128,3 +128,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dust: {fileID: 229923605316202704, guid: c5ec7619e3c39204781b84d5ec151ddc, type: 3}
   outlineThickness: 0.5
+  _type: 1
+  _team: 2
+  isPinned: 0
+  isHasMoved: 0
+  isHasJustDoubleMoved: 0
