@@ -392,7 +392,7 @@ public class MovementLogic
         switch (piece.Type)
         {
             case PieceType.Pawn:
-                AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
+                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col + 1));
                 if (AddMoveIfNotBlocked(new TileIndex(row + 1 * side, col), false))
                 {
@@ -631,7 +631,6 @@ public class MovementLogic
                     piecesAttackingKing.Add(new TileIndex(row, col));
                 }
             }
-            threatList.Add(index);
         }
     }
 
