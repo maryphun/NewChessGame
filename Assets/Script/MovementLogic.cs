@@ -85,6 +85,7 @@ public class MovementLogic
             {
                 if (leftRook.Type == PieceType.Rook && leftRook.isHasMoved)
                 {
+                    Debug.Log("Checking Left castle rule");
                     //Left Rook on starting square and hasn't moved
                     //Check no piece at other squares;
                     bool isClear = true;
@@ -118,6 +119,7 @@ public class MovementLogic
             {
                 if (rightRook.Type == PieceType.Rook && rightRook.isHasMoved)
                 {
+                    Debug.Log("Checking right castle rule");
                     //Right Rook on starting square and hasn't moved
                     //Check no piece at other squares;
                     bool isClear = true;
@@ -311,6 +313,7 @@ public class MovementLogic
             //-If the number of attacking pieces is 1, allow blocking or taking threat
             if (isOneThreat)
             {
+                Debug.Log("One King Threat Detected");
                 TileIndex threat = piecesAttackingKing[0];
                 var threatInfo = BoardArray.Instance().GetTilePiecePropertiesAt(threat);
 
@@ -327,7 +330,7 @@ public class MovementLogic
                 }
                 //Apply mask to all team pieces other than king
             }
-
+            
             List<TileIndex> kingMovesCashe = allMoves[king];
             for (int i = 0; i < allMoves.Length; i++)
             {
@@ -341,7 +344,7 @@ public class MovementLogic
                             if (isOneThreat)
                             {
                                 //For one threat Apply mask to all team pieces other than king
-                                for (int j = allMoves.Length - 1; j >= 0; j--)
+                                for (int j = allMoves[i].Count - 1; j >= 0; j--)
                                 {
                                     if (!validMovesMask[allMoves[i][j]]) 
                                     {
@@ -378,17 +381,13 @@ public class MovementLogic
         switch (piece.Type)
         {
             case PieceType.Pawn:
-                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
+                AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col + 1));
                 if (AddMoveIfNotBlocked(new TileIndex(row + 1 * side, col), false))
                 {
-                    TileIndex tile = new TileIndex(row + 2 * side, col);
-                    ChessPieceProperties tmp = BoardArray.Instance().GetTilePiecePropertiesAt(tile);
-
-                    if (tmp != null)
-                    {
-                        if (tmp.isHasMoved)
-                            AddMoveIfNotBlocked(tile, false);
+                    if (!piece.isHasMoved) 
+                    { 
+                        AddMoveIfNotBlocked(new TileIndex(row + 2 * side, col), false);
                     }
                 }
                 //en passant move
@@ -580,7 +579,7 @@ public class MovementLogic
 
             if (checkPiece != null)
             {
-                if (checkPiece.Team != piece.Team) //if enemy piece blocking, add then break
+                if (checkPiece.Team != piece.Team && isAddThreat == true) //if enemy piece blocking and can take with move, add then break
                 {
                     AddMove(checkIndex);
                 }
@@ -601,16 +600,20 @@ public class MovementLogic
 
         void AddThreat(TileIndex index)
         {
+            if (piece == null)
+            {
+                Debug.LogException(new Exception("Attempted to add threat for tile with no piece present"));
+            }
             //Cashe index if piece is checking opposing king
             ChessPieceProperties king = BoardArray.Instance().GetTilePiecePropertiesAt(index);
-            if (piece != null && king != null)
+            if (king != null)
             {
                 if (king.Type == PieceType.King && king.Team != piece.Team)
                 {
                     piecesAttackingKing.Add(new TileIndex(row, col));
                 }
-                threatList.Add(index);
             }
+            threatList.Add(index);
         }
     }
 

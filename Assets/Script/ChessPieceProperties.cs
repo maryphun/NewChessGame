@@ -53,6 +53,14 @@ public class ChessPieceProperties : MonoBehaviour
     [HideInInspector] public bool isHasMoved = false;
     [HideInInspector] public bool isHasJustDoubleMoved = false;
 
+    void Awake()
+    {
+        isPinned = false;
+        isHasMoved = false;
+        isHasJustDoubleMoved = false;
+        pinningPieceIndex = TileIndex.Null;
+    }
+
 
     // Start is called before the first frame update
     void Start()

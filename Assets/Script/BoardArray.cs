@@ -44,9 +44,8 @@ public class BoardArray : Singleton<BoardArray>
     }
     
     //Sets the object reference held at the provided index
-    public void SetTilePieceAt(int row, int column, GameObject obj)
+    public void SetTilePieceAt(int row, int column, GameObject obj, bool isInitial = false)
     {
-        
         ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
         pieces[this.Index2DToIndex(row, column)] = properties;
         if(properties.Type == PieceType.King)
@@ -58,6 +57,9 @@ public class BoardArray : Singleton<BoardArray>
             else
                 Debug.LogError("Team tag for Object named King did not match.");
         }
+
+        properties.isHasMoved = !isInitial;
+
     }
 
     // unregister the piece in this index

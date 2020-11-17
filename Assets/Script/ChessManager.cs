@@ -95,8 +95,8 @@ public class ChessManager : MonoBehaviour
         {
             wPawns[i].transform.DOMove(board.GetTileCenter(1, i), 0.5f, false);
             bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
-            board.SetTilePieceAt(1, i, wPawns[i]);
-            board.SetTilePieceAt(6, i, bPawns[i]);
+            board.SetTilePieceAt(1, i, wPawns[i], true);
+            board.SetTilePieceAt(6, i, bPawns[i], true);
             AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
             yield return new WaitForSeconds(0.1f);
         }
@@ -108,8 +108,8 @@ public class ChessManager : MonoBehaviour
             int index = i == 0 ? 0 : 7;
             wRooks[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
             bRooks[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wRooks[i]);
-            board.SetTilePieceAt(7, index, bRooks[i]);
+            board.SetTilePieceAt(0, index, wRooks[i], true);
+            board.SetTilePieceAt(7, index, bRooks[i], true);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -121,8 +121,8 @@ public class ChessManager : MonoBehaviour
             int index = i == 0 ? 1 : 6;
             wKnights[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
             bKnights[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wKnights[i]);
-            board.SetTilePieceAt(7, index, bKnights[i]);
+            board.SetTilePieceAt(0, index, wKnights[i], true);
+            board.SetTilePieceAt(7, index, bKnights[i], true);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -134,8 +134,8 @@ public class ChessManager : MonoBehaviour
             int index = i == 0 ? 2 : 5;
             wBishops[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
             bBishops[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wBishops[i]);
-            board.SetTilePieceAt(7, index, bBishops[i]);
+            board.SetTilePieceAt(0, index, wBishops[i], true);
+            board.SetTilePieceAt(7, index, bBishops[i], true);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -146,10 +146,10 @@ public class ChessManager : MonoBehaviour
         wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
         bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
         bKing.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
-        board.SetTilePieceAt(0, 3, wQueen);
-        board.SetTilePieceAt(0, 4, wKing);
-        board.SetTilePieceAt(7, 3, bQueen);
-        board.SetTilePieceAt(7, 4, bKing);
+        board.SetTilePieceAt(0, 3, wQueen, true);
+        board.SetTilePieceAt(0, 4, wKing, true);
+        board.SetTilePieceAt(7, 3, bQueen, true);
+        board.SetTilePieceAt(7, 4, bKing, true);
         yield return new WaitForSeconds(0.51f);
 
         // Update it's rendering order. This function should always get called when you move the piece
