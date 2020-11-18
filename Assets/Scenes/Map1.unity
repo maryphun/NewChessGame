@@ -3339,8 +3339,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2698871edda9d8347bbb0a137e2569a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonHoldMoveInterval: 0.15
-  buttonHoldMoveTime: 0.8
+  buttonHoldMoveInterval: 0.125
+  buttonHoldMoveTime: 0.4
   controlOn: 1
 --- !u!1 &1952988327
 GameObject:
