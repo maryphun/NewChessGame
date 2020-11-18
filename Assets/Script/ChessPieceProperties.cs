@@ -21,6 +21,7 @@ public enum Team
     White,
 }
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class ChessPieceProperties : MonoBehaviour
 {
     [Header("Reference")]

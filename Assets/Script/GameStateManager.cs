@@ -8,8 +8,10 @@ public class GameStateManager : MonoBehaviour
     // Reference
     [SerializeField] GameObject chessBoard = default;
     [SerializeField] ParticleSystem dust = default;
-    [SerializeField] GameObject cursor = default;
+    [SerializeField] CursorController cursor = default;
     [SerializeField] UICanvas UICanvas = default;
+
+    private bool isPlayerTurn;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +38,7 @@ public class GameStateManager : MonoBehaviour
             for (int j = -8; j <= 8; j++)
             {
                 var particle = Instantiate(dust, new Vector3(i * 0.5f, j * 0.5f, 0), Quaternion.identity);
-                Destroy(particle.gameObject, particle.GetComponent<ParticleSystem>().main.duration - 0.1f);
+                Destroy(particle.gameObject, particle.GetComponent<ParticleSystem>().main.duration);
             }
         }
 
@@ -44,8 +46,6 @@ public class GameStateManager : MonoBehaviour
 
         StartCoroutine(GetComponent<ChessManager>().InitiateChess());
         chessBoard.GetComponentInChildren<CanvasGroup>().DOFade(1.0f, 3f);
-        cursor.SetActive(true);
-        cursor.GetComponent<SpriteRenderer>().DOFade(1.0f, 2f);
 
         //AudioManager.Instance.SetMusicVolume(0.5f);
         //AudioManager.Instance.PlayMusicWithFade("theme", 3f);
@@ -53,6 +53,23 @@ public class GameStateManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         UICanvas.CharacterMoveIn(0.5f);
+
+        // Enable cursor
+        cursor.gameObject.SetActive(true);
+        cursor.SpriteRenderer.DOFade(1.0f, 0.1f);
+        cursor.GetComponent<Input>().SetControlActive(true);
+
+        // player start first
+        isPlayerTurn = true;
+        Turn();
+    }
+
+    private void Turn()
+    {
+        if (isPlayerTurn)
+        {
+
+        }
     }
 
     private IEnumerator Shake(Transform target, float magnitude, float time)

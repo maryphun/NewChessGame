@@ -41,22 +41,16 @@ public class MovementLogic
             }
         }
 
-        Debug.Log("Update valid move");
         FlagPinnedPieces();
-        Debug.Log("1");
         CalcMovesAndFlagThreatenedTiles();
-        Debug.Log("2");
         //Needs list of threatened tile mask for calculating king moves
         //Removes King moving into check and any moves not preventing check if in check
         RemoveInvalidCheckMoves();
-        Debug.Log("3");
 
         //Castling Logic
         //Can check bottom and top rows directly
         AddRowCastleMoves(0);
-        Debug.Log("4");
         AddRowCastleMoves(7);
-        Debug.Log("5");
     }
 
     //Temp Debug function
