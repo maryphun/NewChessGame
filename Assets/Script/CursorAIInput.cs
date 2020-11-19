@@ -14,28 +14,53 @@ public class CursorAIInput : MonoBehaviour
     // move the cursor to specific tileindex
     public bool MoveTo(TileIndex index)
     {
-        if (!operating || active)
+        if (operating || !active)
             return false;
 
         StartCoroutine(MoveToTargetArray(index.row, index.col, moveInterval));
+        operating = true;
 
         return true;
+    }
+
+    public void Click()
+    {
+        if (operating || !active)
+            return;
+
+        controller.Confirm();
+    }
+
+    public void Cancel()
+    {
+        if (operating || !active)
+            return;
+
+        controller.Cancel();
     }
 
     private IEnumerator MoveToTargetArray(int row, int col, float interval)
     {
         // move Y axis first
-        if (controller.CurrentPosition.y != row)   
-        {
+        Vector2Int moveVector = new Vector2Int(col, row) - controller.CurrentPosition;
+        moveVector.y = Mathf.Clamp(moveVector.y, -1, 1);
+        moveVector.x = Mathf.Clamp(moveVector.x, -1, 1);
 
+        if (!(moveVector.y == 0))
+        {
+            moveVector.x = 0;
         }
-        else if (controller.CurrentPosition.x != col)
-        {
 
+        if (moveVector.magnitude > 0)
+        {
+            controller.MoveCursor(moveVector);
+            yield return new WaitForSeconds(interval);
+            StartCoroutine(MoveToTargetArray(row, col, moveInterval));
         }
         else
         {
-
+            // Finish move, call for next action
+            operating = false;
         }
 
         yield return null;
@@ -45,5 +70,7 @@ public class CursorAIInput : MonoBehaviour
     {
         // initialization
         controller = GetComponent<CursorController>();
+
+        operating = false;
     }
 }

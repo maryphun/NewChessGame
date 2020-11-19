@@ -8,7 +8,7 @@ public class GameStateManager : MonoBehaviour
     // Reference
     [SerializeField] GameObject chessBoard = default;
     [SerializeField] ParticleSystem dust = default;
-    [SerializeField] CursorController cursor = default;
+    [SerializeField] CursorController playerCursor = default, enemyCursor = default;
     [SerializeField] UICanvas UICanvas = default;
 
     private bool isPlayerTurn;
@@ -55,20 +55,34 @@ public class GameStateManager : MonoBehaviour
         UICanvas.CharacterMoveIn(0.5f);
 
         // Enable cursor
-        cursor.gameObject.SetActive(true);
-        cursor.SpriteRenderer.DOFade(1.0f, 0.1f);
-        cursor.GetComponent<Input>().SetControlActive(true);
+        playerCursor.gameObject.SetActive(true);
+        playerCursor.ResetPosition();
+        playerCursor.SpriteRenderer.DOFade(1.0f, 0.1f);
+        playerCursor.GetComponent<Input>().SetControlActive(true);
+
+        enemyCursor.gameObject.SetActive(true);
+        enemyCursor.ResetPosition();
+        enemyCursor.SpriteRenderer.DOFade(1.0f, 0.1f);
+        enemyCursor.GetComponent<CursorAIInput>().active = true;
 
         // player start first
-        isPlayerTurn = true;
+        isPlayerTurn = false;
         Turn();
     }
 
-    private void Turn()
+    public void Turn()
     {
+        isPlayerTurn = !isPlayerTurn;   // switch player
         if (isPlayerTurn)
         {
-
+            playerCursor.isInTurn = true;
+            enemyCursor.isInTurn = false;
+        }
+        else
+        {
+            playerCursor.isInTurn = false;
+            enemyCursor.isInTurn = true;
+            Debug.Log(enemyCursor.GetComponent<CursorAIInput>().MoveTo(new TileIndex(Random.Range(0, 7), Random.Range(0, 7))));
         }
     }
 

@@ -13,10 +13,12 @@ public class CursorController : MonoBehaviour
     [SerializeField] private Vector2Int initialPosition = new Vector2Int(4, 4);
 
     private BoardArray board;
+    public GameStateManager gamestate;
     private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
     private TileIndex lockedOnPieceIndex;
     private List<Transform> validMoveVisualList;
     private Transform hoveringValidMove;
+    public bool isInTurn;
 
     // get only
     private Vector2Int currentPosition, moveVector;
@@ -39,6 +41,9 @@ public class CursorController : MonoBehaviour
     
     public void Confirm()
     {
+        if (!isInTurn)  // not your turn
+            return;
+
         // check if player is trying to move locked-on chess piece to this index
         if (hoveringValidMove != null)
         {
@@ -103,12 +108,21 @@ public class CursorController : MonoBehaviour
 
     private void MoveChess()
     {
+        // check if this is a normal move or attacking
+        GameObject targetChess = board.GetTilePieceAt(currentPosition.y, currentPosition.x);
+        if (targetChess != null)
+        {
+            // this is an attack
+            targetChess.GetComponent<ChessPieceProperties>().Attacked(0.15f);
+            Destroy(targetChess, 1f);
+        }
+
         // move the selected chess piece to this position index
         Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex,
             new TileIndex(currentPosition.y, currentPosition.x));
 
         // move the chess piece graphic
-        lockedOnPiece.transform.DOMove(newPiecePosition, cursorMoveSpeed, false);
+        lockedOnPiece.Move(newPiecePosition);
 
         // canccel the lock on
         lockedOnPiece.LockOn(false);
@@ -127,6 +141,9 @@ public class CursorController : MonoBehaviour
 
         // clear memory
         lockedOnPiece = null;
+
+        // pass to other player
+        gamestate.Turn();
     }
 
     public void Cancel()
@@ -222,5 +239,10 @@ public class CursorController : MonoBehaviour
     public void MoveVectorReset()
     {
         moveVector = Vector2Int.zero;
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = board.GetTileCenter(currentPosition.y, currentPosition.x);
     }
 }
