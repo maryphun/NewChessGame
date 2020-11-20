@@ -74,7 +74,7 @@ public class MovementLogic
 
     }
 
-    public bool IsInStaleMate (Team team)
+    public bool IsInStalemate (Team team)
     {
         if (IsMoveAvaliable(team))
             return false;
