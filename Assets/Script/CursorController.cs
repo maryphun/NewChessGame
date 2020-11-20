@@ -115,6 +115,8 @@ public class CursorController : MonoBehaviour
             // this is an attack
             targetChess.GetComponent<ChessPieceProperties>().Attacked(0.15f);
             Destroy(targetChess, 1f);
+            AudioManager.Instance.PlaySFX("attack", 0.5f);
+            AudioManager.Instance.PlaySFX("compact", 0.5f);
         }
 
         // move the selected chess piece to this position index
@@ -139,11 +141,20 @@ public class CursorController : MonoBehaviour
         validMoveVisualList.Clear();
         hoveringValidMove = null;
 
+        // is this a pawn promotion?
+        if (lockedOnPiece.GetComponent<ChessPieceProperties>().Type == PieceType.Pawn
+            && (currentPosition.y == 7　|| currentPosition.y == 0))
+        {
+            gamestate.Promotion(new TileIndex(currentPosition.y, currentPosition.x));
+        }
+        else
+        {
+            // pass the turn to other side
+            gamestate.Turn();
+        }
+
         // clear memory
         lockedOnPiece = null;
-
-        // pass to other player
-        gamestate.Turn();
     }
 
     public void Cancel()

@@ -651,6 +651,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 553183600}
   m_CullTransparentMesh: 0
+--- !u!114 &581260013 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1378981636, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+  m_PrefabInstance: {fileID: 4809786872634208441}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &648359389
 GameObject:
   m_ObjectHideFlags: 0
@@ -1108,6 +1119,7 @@ MonoBehaviour:
   playerCursor: {fileID: 1943934138}
   enemyCursor: {fileID: 267798470628043741}
   UICanvas: {fileID: 448375015}
+  promotionUI: {fileID: 3388212638507804793, guid: 11251f9ddb20383409c0bfdcfdfc2e02, type: 3}
 --- !u!114 &936303861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3312,6 +3324,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1792233928}
   m_CullTransparentMesh: 0
+--- !u!114 &1872203203 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 961050784, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+  m_PrefabInstance: {fileID: 4809786872634208441}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1943934138 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6368043574289772932, guid: a5f2647a71be2fe42bc015b0e2b361ef, type: 3}
@@ -3949,6 +3972,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 448375019, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: playerCharacter
+      value: 
+      objectReference: {fileID: 581260013}
+    - target: {fileID: 448375019, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: opponentCharacter
+      value: 
+      objectReference: {fileID: 1872203203}
+    - target: {fileID: 448375019, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
+      propertyPath: highlightScale
+      value: 1.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4684206407314454426, guid: 08c6a48813e176f4f95ae064c90e327b, type: 3}
       propertyPath: m_Name
       value: Canvas

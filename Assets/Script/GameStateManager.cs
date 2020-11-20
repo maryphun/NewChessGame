@@ -10,6 +10,7 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] ParticleSystem dust = default;
     [SerializeField] CursorController playerCursor = default, enemyCursor = default;
     [SerializeField] UICanvas UICanvas = default;
+    [SerializeField] GameObject promotionUI = default;
 
     private bool isPlayerTurn;
 
@@ -55,14 +56,9 @@ public class GameStateManager : MonoBehaviour
         UICanvas.CharacterMoveIn(0.5f);
 
         // Enable cursor
-        playerCursor.gameObject.SetActive(true);
-        playerCursor.ResetPosition();
-        playerCursor.SpriteRenderer.DOFade(1.0f, 0.1f);
+        InitiateCursor(playerCursor);
         playerCursor.GetComponent<Input>().SetControlActive(true);
-
-        enemyCursor.gameObject.SetActive(true);
-        enemyCursor.ResetPosition();
-        enemyCursor.SpriteRenderer.DOFade(1.0f, 0.1f);
+        InitiateCursor(enemyCursor);
         enemyCursor.GetComponent<CursorAIInput>().active = true;
 
         // player start first
@@ -84,6 +80,28 @@ public class GameStateManager : MonoBehaviour
             enemyCursor.isInTurn = true;
             Debug.Log(enemyCursor.GetComponent<CursorAIInput>().MoveTo(new TileIndex(Random.Range(0, 7), Random.Range(0, 7))));
         }
+        Debug.Log("player turn " + isPlayerTurn);
+        // UI
+        UICanvas.PlayerTurn(isPlayerTurn);
+    }
+
+    // display selection UI when a pawn got promoted
+    public void Promotion(TileIndex targetIndex)
+    {
+        // disable both cursor first
+        playerCursor.isInTurn = false;
+        playerCursor.GetComponent<Input>().SetControlActive(false);
+        enemyCursor.isInTurn = false;
+
+        GameObject tmp = Instantiate(promotionUI, UICanvas.transform);
+        tmp.GetComponent<PromotionUI>().SetPromotionTarget(targetIndex, this);
+    }
+
+    // when the promotion is finished
+    public void Promoted()
+    {
+        playerCursor.GetComponent<Input>().SetControlActive(true);
+        Turn();
     }
 
     private IEnumerator Shake(Transform target, float magnitude, float time)
@@ -100,5 +118,13 @@ public class GameStateManager : MonoBehaviour
         } while (timeElapsed < time);
 
         target.position = originalPosition;
+    }
+
+    private void InitiateCursor(CursorController target)
+    {
+        target.gameObject.SetActive(true);
+        target.SpriteRenderer.DOFade(1.0f, 0.1f);
+        target.ResetPosition();
+        target.gamestate = this;
     }
 }

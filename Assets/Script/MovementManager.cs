@@ -28,4 +28,12 @@ public class MovementManager : Singleton<MovementManager>
         // return new position of the chess piece to move
         return board.GetTileCenter(target.row, target.col);
     }
+
+    public void ReplaceChessPiece(GameObject chess, TileIndex targetIndex)
+    {
+        board.RemoveTilePieceAt(targetIndex.row, targetIndex.col);
+        board.SetTilePieceAt(targetIndex.row, targetIndex.col, chess);
+        // update
+        logic.UpdateValidMoves();
+    }
 }
