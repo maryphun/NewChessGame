@@ -283,10 +283,10 @@ public class MovementLogic
         TileIndex wKing = BoardArray.Instance().wKingIndex;
         TileIndex bKing = BoardArray.Instance().bKingIndex;
         Debug.Log("White King Position" + wKing.row + ", " + wKing.col);
+        Debug.Log("Black King Position" + bKing.row + ", " + bKing.col);
         isWInCheck = allThreatenedTileMaskB[wKing];
         isBInCheck = allThreatenedTileMaskW[bKing];
         if (isWInCheck && isBInCheck) Debug.LogException(new Exception("Both kings flagged as in check"));
-
         Debug.Log("Check State, White: " + isWInCheck + ", Black:" + isBInCheck);
         //In check logic
         if (isWInCheck) FilterCheckResolvingMoves(wKing);
@@ -392,7 +392,7 @@ public class MovementLogic
         switch (piece.Type)
         {
             case PieceType.Pawn:
-                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
+                AddMoveIfEnemy(new TileIndex(row + 1 * side, col - 1));
                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col + 1));
                 if (AddMoveIfNotBlocked(new TileIndex(row + 1 * side, col), false))
                 {
@@ -631,6 +631,7 @@ public class MovementLogic
                     piecesAttackingKing.Add(new TileIndex(row, col));
                 }
             }
+            threatList.Add(index);
         }
     }
 
@@ -714,7 +715,10 @@ public class MovementLogic
             return points;
         }
 
-        TileIndex increment = new TileIndex(diff.row / Mathf.Abs(diff.row), diff.col / Mathf.Abs(diff.col));
+        TileIndex increment;
+        increment.row = (diff.row == 0) ? 0 : diff.row / Mathf.Abs(diff.row);
+        increment.col = (diff.col == 0) ? 0 : diff.col / Mathf.Abs(diff.col);
+
         TileIndex point = a + increment;
         while (point != b)
         {
