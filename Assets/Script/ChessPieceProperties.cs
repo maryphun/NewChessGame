@@ -35,6 +35,7 @@ public class ChessPieceProperties : MonoBehaviour
     // private variables
     private float selectionJumpRange = 0.05f;   // the range amount this piece will move upward when it has been selected
     private bool selectable;
+    private IEnumerator shake;
 
     // constant variables
     private SpriteRenderer spriteRenderer;
@@ -60,6 +61,7 @@ public class ChessPieceProperties : MonoBehaviour
         isHasMoved = false;
         isHasJustDoubleMoved = false;
         pinningPieceIndex = TileIndex.Null;
+        shake = Shake(0.01f);
     }
 
 
@@ -196,5 +198,33 @@ public class ChessPieceProperties : MonoBehaviour
         } while (timeElapsed < duration);
 
         yield return null;
+    }
+
+    public void Threatened(bool boolean)
+    {
+        if (boolean)
+        {
+            StartCoroutine(shake);
+            SpriteRenderer.material.SetFloat("_OutlineThickness", outlineThickness);
+        }
+        else
+        {
+            Debug.Log("stop");
+            SpriteRenderer.transform.localPosition = originalGraphicPosition;
+            StopCoroutine(shake);
+            SpriteRenderer.material.SetFloat("_OutlineThickness", 0.0f);
+        }
+    }
+
+    private IEnumerator Shake(float magnitude)
+    {
+        Vector2 originPos = originalGraphicPosition;
+        while (true)
+        {
+            SpriteRenderer.transform.localPosition = originPos;
+            // x * 2 - 1 is a equation that make the number always result in either 1 or -1, there will be no 0
+            SpriteRenderer.transform.localPosition = new Vector2(((Random.Range(0, 2) * 2) - 1) * magnitude, ((Random.Range(0, 2) * 2) - 1) * magnitude) + originalGraphicPosition;
+            yield return null;
+        }
     }
 }

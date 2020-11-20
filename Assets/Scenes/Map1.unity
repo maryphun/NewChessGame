@@ -1114,6 +1114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a33f576c04ac2549817ecdffd78aeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alwaysPlayerTurn: 1
   chessBoard: {fileID: 810177403}
   dust: {fileID: 6491845401687680021, guid: a4010389c9091c04f93254048a39bbcd, type: 3}
   playerCursor: {fileID: 1943934138}

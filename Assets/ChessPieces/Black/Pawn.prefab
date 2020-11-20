@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -1748699395019636890, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
       propertyPath: outlineThickness
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -1748699395019636890, guid: dc9855c9901b8d94c8a71326fea309e4, type: 3}
       propertyPath: _team

@@ -12,11 +12,13 @@ public class CursorController : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private Vector2Int initialPosition = new Vector2Int(4, 4);
 
+    public Team cursorTeam;
     private BoardArray board;
     public GameStateManager gamestate;
     private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
     private TileIndex lockedOnPieceIndex;
     private List<Transform> validMoveVisualList;
+    private List<ChessPieceProperties> threateningChess;
     private Transform hoveringValidMove;
     public bool isInTurn;
 
@@ -31,6 +33,7 @@ public class CursorController : MonoBehaviour
     {
         board = BoardArray.Instance();
         validMoveVisualList = new List<Transform>();
+        threateningChess = new List<ChessPieceProperties>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         
@@ -67,7 +70,7 @@ public class CursorController : MonoBehaviour
                     CancelLockOn(piece);
                 }
             }
-            else
+            else if (piece.Team == cursorTeam)  // last condition: this chess is belong to this player
             {
                 LockOnChess(piece, new TileIndex(currentPosition.y, currentPosition.x));
 
@@ -103,6 +106,16 @@ public class CursorController : MonoBehaviour
             newRenderer.transform.localScale = originRenderer.transform.localScale;
             validMoveVisualList.Add(validMoveVisual.transform);
             hoveringValidMove = null;
+
+            // check if this is an attack move
+            var attackTarget = board.GetTilePiecePropertiesAt(validMove);
+            if (attackTarget != null 
+                && attackTarget.Team != cursorTeam)
+            {
+                newRenderer.sprite = null;
+                attackTarget.Threatened(true);
+                threateningChess.Add(attackTarget);
+            }
         }
     }
 
@@ -136,6 +149,13 @@ public class CursorController : MonoBehaviour
             float removeTime = validMoveVisual == hoveringValidMove ? cursorMoveSpeed : 0f;
             Destroy(validMoveVisual.gameObject, removeTime);
         }
+
+        // remove all visualization of threateningChess
+        foreach (ChessPieceProperties attackingChess in threateningChess)
+        {
+            attackingChess.Threatened(false);
+        }
+        threateningChess.Clear();
 
         // reset list 
         validMoveVisualList.Clear();
@@ -176,6 +196,13 @@ public class CursorController : MonoBehaviour
             validMoveVisual.DOMove(((Vector2)lockedOnPiece.transform.position) + lockedOnPiece.GraphicPosition, cursorMoveSpeed, false);
             Destroy(validMoveVisual.gameObject, cursorMoveSpeed);
         }
+        
+        // remove all visualization of threateningChess
+        foreach (ChessPieceProperties attackingChess in threateningChess)
+        {
+            attackingChess.Threatened(false);
+        }
+        threateningChess.Clear();
 
         // reset this list 
         validMoveVisualList.Clear();

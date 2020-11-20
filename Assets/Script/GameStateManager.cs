@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class GameStateManager : MonoBehaviour
 {
+    [SerializeField] bool alwaysPlayerTurn = false;
+
     // Reference
     [SerializeField] GameObject chessBoard = default;
     [SerializeField] ParticleSystem dust = default;
@@ -55,10 +57,10 @@ public class GameStateManager : MonoBehaviour
 
         UICanvas.CharacterMoveIn(0.5f);
 
-        // Enable cursor
-        InitiateCursor(playerCursor);
+        // Enable cursor and assign a team for it
+        InitiateCursor(playerCursor, Team.White);
         playerCursor.GetComponent<Input>().SetControlActive(true);
-        InitiateCursor(enemyCursor);
+        InitiateCursor(enemyCursor, Team.Black);
         enemyCursor.GetComponent<CursorAIInput>().active = true;
 
         // player start first
@@ -68,7 +70,13 @@ public class GameStateManager : MonoBehaviour
 
     public void Turn()
     {
-        isPlayerTurn = !isPlayerTurn;   // switch player
+        isPlayerTurn = !isPlayerTurn;   // switch player\
+
+        if (alwaysPlayerTurn)
+        {
+            isPlayerTurn = true;
+        }
+
         if (isPlayerTurn)
         {
             playerCursor.isInTurn = true;
@@ -80,7 +88,7 @@ public class GameStateManager : MonoBehaviour
             enemyCursor.isInTurn = true;
             Debug.Log(enemyCursor.GetComponent<CursorAIInput>().MoveTo(new TileIndex(Random.Range(0, 7), Random.Range(0, 7))));
         }
-        Debug.Log("player turn " + isPlayerTurn);
+
         // UI
         UICanvas.PlayerTurn(isPlayerTurn);
     }
@@ -120,9 +128,10 @@ public class GameStateManager : MonoBehaviour
         target.position = originalPosition;
     }
 
-    private void InitiateCursor(CursorController target)
+    private void InitiateCursor(CursorController target, Team team)
     {
         target.gameObject.SetActive(true);
+        target.cursorTeam = team;
         target.SpriteRenderer.DOFade(1.0f, 0.1f);
         target.ResetPosition();
         target.gamestate = this;
