@@ -338,11 +338,15 @@ public class MovementLogic
                     {
                         validMovesMask[point] = true;
                     };
+
+                    //Remove king move to square behind but still inline with bishop/rook/queen
+                    TileIndex toRemove = GetPointAfter(threat, king);
+                    allMoves[king].Remove(toRemove);
+
                 }
                 //Apply mask to all team pieces other than king
             }
             
-            List<TileIndex> kingMovesCashe = allMoves[king];
             for (int i = 0; i < allMoves.Length; i++)
             {
                 if (Utils.IndexToTileIndex(i) != king)
@@ -727,6 +731,21 @@ public class MovementLogic
         }
 
         return points;
+    }
+
+    //Returns the next point after b in a line from a passing through b
+    public TileIndex GetPointAfter(TileIndex a, TileIndex b) 
+    {
+        TileIndex diff = b - a;
+        if (a == b)
+        {
+            Debug.LogError("Cannot find vector between two of the same index.");
+            return TileIndex.Null;
+        }
+        TileIndex increment;
+        increment.row = (diff.row == 0) ? 0 : diff.row / Mathf.Abs(diff.row);
+        increment.col = (diff.col == 0) ? 0 : diff.col / Mathf.Abs(diff.col);
+        return b + increment;
     }
 
     //returns true if the index is within board bounds
