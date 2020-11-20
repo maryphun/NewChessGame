@@ -53,10 +53,73 @@ public class MovementLogic
         AddRowCastleMoves(7);
     }
 
+    public bool IsInCheckmate(Team team)
+    {
+        if (IsMoveAvaliable(team))
+            return false;
+        
+        if (team == Team.White)
+        {
+            return isWInCheck;
+        }
+        else if (team == Team.Black)
+        {
+            return isBInCheck;
+        }
+        else
+        {
+            Debug.LogError("Invalid team specified for IsCheckmate()");
+            return false;
+        }
+
+    }
+
+    public bool IsInStaleMate (Team team)
+    {
+        if (IsMoveAvaliable(team))
+            return false;
+
+        if (team == Team.White)
+        {
+            return !isWInCheck;
+        }
+        else if (team == Team.Black)
+        {
+            return !isBInCheck;
+        }
+        else
+        {
+            Debug.LogError("Invalid team specified for IsCheckmate()");
+            return false;
+        }
+
+    }
+
+    private bool IsMoveAvaliable(Team team)
+    {
+        bool isValidMoveFound = false;
+        for (int i = 0; i < allMoves.Length; i++)
+        {
+            ChessPieceProperties tmpPiece = BoardArray.Instance().GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
+            if (tmpPiece != null)
+            {
+                if (tmpPiece.Team == team)
+                {
+                    if (allMoves[i].Count > 0)
+                    {
+                        isValidMoveFound = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return isValidMoveFound;
+    }
+
     //Temp Debug function
     void PrintWhiteThreats()
     {
-        foreach(TileIndex index in BoardArray.Instance().Indicies)
+        foreach (TileIndex index in BoardArray.Instance().Indicies)
         {
             Debug.Log("White Threats, Tile: " + index.row + ", " + index.col + " Threatened: " + allThreatenedTileMaskW[index]);
         }
@@ -270,7 +333,7 @@ public class MovementLogic
             }
         }
     }
-    
+
     //Removes moves made invalid by the king being in check or king moving into check
     private void RemoveInvalidCheckMoves()
     {
@@ -286,14 +349,14 @@ public class MovementLogic
         if (isWInCheck) FilterCheckResolvingMoves(wKing);
         if (isBInCheck) FilterCheckResolvingMoves(bKing);
 
-        
+
         PreventMoveIntoCheck(bKing, allThreatenedTileMaskW);
         PreventMoveIntoCheck(wKing, allThreatenedTileMaskB);
 
         //Prevent king moving into check by removing moves to threatened tiles
-        void PreventMoveIntoCheck(TileIndex king, TileMask<bool> threats) 
+        void PreventMoveIntoCheck(TileIndex king, TileMask<bool> threats)
         {
-            for(int i = allMoves[king].Count-1; i>=0; i--) 
+            for (int i = allMoves[king].Count - 1; i >= 0; i--)
             {
                 if (threats[allMoves[king][i]])
                 {
@@ -309,7 +372,7 @@ public class MovementLogic
             {
                 Debug.LogException(new Exception("Attempted to resolve check where there is no attacking piece."));
             }
-                
+
 
             var kingProperties = BoardArray.Instance().GetTilePiecePropertiesAt(king);
             bool isOneThreat = piecesAttackingKing.Count == 1;
@@ -340,7 +403,7 @@ public class MovementLogic
                 }
                 //Apply mask to all team pieces other than king
             }
-            
+
             for (int i = 0; i < allMoves.Length; i++)
             {
                 if (Utils.IndexToTileIndex(i) != king)
@@ -355,7 +418,7 @@ public class MovementLogic
                                 //For one threat Apply mask to all team pieces other than king
                                 for (int j = allMoves[i].Count - 1; j >= 0; j--)
                                 {
-                                    if (!validMovesMask[allMoves[i][j]]) 
+                                    if (!validMovesMask[allMoves[i][j]])
                                     {
                                         allMoves[i].RemoveAt(j);
                                     }
@@ -394,8 +457,8 @@ public class MovementLogic
                 AddMoveIfEnemy(new TileIndex(row + 1 * side, col + 1));
                 if (AddMoveIfNotBlocked(new TileIndex(row + 1 * side, col), false))
                 {
-                    if (!piece.isHasMoved) 
-                    { 
+                    if (!piece.isHasMoved)
+                    {
                         AddMoveIfNotBlocked(new TileIndex(row + 2 * side, col), false);
                     }
                 }
@@ -439,7 +502,7 @@ public class MovementLogic
 
         if (piece.isPinned)
         {
-            
+
             //Debug.LogError("Pin Situation Not Yet Accounted For");
             TileIndex king = piece.Team == Team.White ? BoardArray.Instance().wKingIndex : BoardArray.Instance().bKingIndex;
             if (piece.pinningPieceIndex != TileIndex.Null)
@@ -452,7 +515,7 @@ public class MovementLogic
                         tmpList.Add(point);
                     }
                 }
-                
+
                 moveList.Clear();
                 moveList = tmpList;
             }
@@ -733,7 +796,7 @@ public class MovementLogic
     }
 
     //Returns the next point after b in a line from a passing through b
-    public TileIndex GetPointAfter(TileIndex a, TileIndex b) 
+    public TileIndex GetPointAfter(TileIndex a, TileIndex b)
     {
         TileIndex diff = b - a;
         if (a == b)
