@@ -24,7 +24,7 @@ public class AfterImage : MonoBehaviour
         copy.spriteSortPoint = original.spriteSortPoint;
         copy.material = original.material;
         copy.sortingLayerID = original.sortingLayerID;
-        copy.sortingOrder = original.sortingOrder - 1;
+        copy.sortingOrder = original.sortingOrder - 100;
 
         originAlpha = original.color.a * initiateAlpha;
 

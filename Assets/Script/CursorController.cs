@@ -1,116 +1,53 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class CursorController : MonoBehaviour
 {
     [SerializeField] private float cursorMoveSpeed = 0.25f;
-    [SerializeField] private float buttonHoldMoveInterval = 0.15f;
-    [SerializeField] private float buttonHoldMoveTime = 0.8f;
 
     [Header("Debug")]
-    [SerializeField] private bool ControlOn = true;
+    [SerializeField] private Vector2Int initialPosition = new Vector2Int(4, 4);
 
-    private Vector2Int currentPosition, moveVector;
     private BoardArray board;
-    private bool buttonClicked;
-    private float buttonHoldTime;
-    private CursorInput input = null;
+    public GameStateManager gamestate;
     private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
     private TileIndex lockedOnPieceIndex;
     private List<Transform> validMoveVisualList;
     private Transform hoveringValidMove;
+    public bool isInTurn;
 
-    private CursorInput Input
-    {
-        get
-        {
-            if (input != null) { return input; }
-            return input = new CursorInput();
-        }
-    }
+    // get only
+    private Vector2Int currentPosition, moveVector;
+    public Vector2Int CurrentPosition { get { return currentPosition; } }
+    public Vector2Int MoveVector { get { return moveVector; } }
+    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer SpriteRenderer { get { return spriteRenderer; } }
 
     private void Awake()
     {
         board = BoardArray.Instance();
         validMoveVisualList = new List<Transform>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // register movement key
-        Input.Default.MoveVertical.performed += ctx => MoveCursor(new Vector2Int(0, (int)ctx.ReadValue<float>()));
-        Input.Default.MoveHorizontal.performed += ctx => MoveCursor(new Vector2Int((int)ctx.ReadValue<float>(), 0));
-        Input.Default.MoveVertical.canceled += _ => buttonClicked = false;
-        Input.Default.MoveHorizontal.canceled += _ => buttonClicked = false;
-        Input.Default.Confirm.performed += _ => Confirm();
-        Input.Default.Cancel.performed += _ => Cancel();
-
-        if (!ControlOn)
-        {
-            Input.Disable();
-        }
-
-        currentPosition = new Vector2Int(4, 4);
+        
+        currentPosition = initialPosition;
         lockedOnPiece = null;
     }
 
-    private void OnEnable()
+    
+    public void Confirm()
     {
-        // ControlOn is used for debugging.
-        if (ControlOn)
-        {
-            Input.Enable();
-        }
-    }
+        if (!isInTurn)  // not your turn
+            return;
 
-    private void OnDisable()
-    {
-        Input.Disable();
-    }
-
-    private void Update()
-    {
-        if (buttonClicked)
-        {
-            buttonHoldTime += Time.deltaTime;
-
-            if (buttonHoldTime > buttonHoldMoveTime)
-            {
-                MoveCursor(moveVector);
-                buttonHoldTime = buttonHoldMoveTime - buttonHoldMoveInterval;
-            }
-        }
-    }
-
-    private void Confirm()
-    {
         // check if player is trying to move locked-on chess piece to this index
         if (hoveringValidMove != null)
         {
-            // move the selected chess piece to this position index
-            Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex,
-                new TileIndex(currentPosition.y, currentPosition.x));
-
-            // move the chess piece graphic
-            lockedOnPiece.transform.DOMove(newPiecePosition, cursorMoveSpeed, false);
-
-            // canccel the lock on
-            lockedOnPiece.LockOn(false);
-
-            // remove all visualization of valid move
-            foreach (Transform validMoveVisual in validMoveVisualList)
-            {
-                // remove it immediately only if it's not the moving target. 
-                float removeTime = validMoveVisual == hoveringValidMove ? cursorMoveSpeed : 0f;
-                Destroy(validMoveVisual.gameObject, removeTime);
-            }
-
-            // reset list 
-            validMoveVisualList.Clear();
-            hoveringValidMove = null;
-
-            // clear memory
-            lockedOnPiece = null;
+            MoveChess();
 
             // end of this function
             return;
@@ -132,41 +69,95 @@ public class CursorController : MonoBehaviour
             }
             else
             {
-                piece.LockOn(true);
-                // store this piece into memory
-                lockedOnPiece = piece;
-                lockedOnPieceIndex = new TileIndex(currentPosition.y, currentPosition.x);
+                LockOnChess(piece, new TileIndex(currentPosition.y, currentPosition.x));
 
                 // sound effect
                 AudioManager.Instance.PlaySFX("lockOn", 0.75f);
-
-                // get all valid move for this chess piece
-                var validMoves = MovementManager.Instance().logic.GetValidMoves(new TileIndex(currentPosition.y, currentPosition.x));
-
-                Debug.Log("there are " + validMoves.Count + " moves. [" + lockedOnPiece.gameObject.name + " at " +  currentPosition + "]");
-
-                // visualize valid move
-                foreach (TileIndex validMove in validMoves)
-                {
-                    var validMoveVisual = new GameObject(lockedOnPiece.gameObject.name + "'s possible move");
-                    validMoveVisual.transform.position = board.GetTileCenter(currentPosition.y, currentPosition.x) + lockedOnPiece.GraphicPosition;
-                    validMoveVisual.transform.DOMove(board.GetTileCenter(validMove.row, validMove.col) + lockedOnPiece.GraphicPosition, cursorMoveSpeed, false);
-                    var newRenderer = validMoveVisual.AddComponent<SpriteRenderer>();
-                    var originRenderer = lockedOnPiece.SpriteRenderer;
-                    newRenderer.sprite = originRenderer.sprite;
-                    newRenderer.color = new Color(originRenderer.color.r, originRenderer.color.g, originRenderer.color.b, originRenderer.color.a / 4f);
-                    newRenderer.sortingLayerID = GetComponent<SpriteRenderer>().sortingLayerID;
-                    newRenderer.sortingOrder = originRenderer.sortingOrder;
-
-                    newRenderer.transform.localScale = originRenderer.transform.localScale;
-                    validMoveVisualList.Add(validMoveVisual.transform);
-                    hoveringValidMove = null;
-                }
             }
         }
     }
 
-    private void Cancel()
+    private void LockOnChess(ChessPieceProperties piece, TileIndex index)
+    {
+        piece.LockOn(true);
+        // store this piece into memory
+        lockedOnPiece = piece;
+        lockedOnPieceIndex = index;
+
+        // get all valid move for this chess piece
+        var validMoves = MovementManager.Instance().logic.GetValidMoves(index);
+
+        // visualize valid move
+        foreach (TileIndex validMove in validMoves)
+        {
+            var validMoveVisual = new GameObject(lockedOnPiece.gameObject.name + "'s possible move");
+            validMoveVisual.transform.position = board.GetTileCenter(index.row, index.col) + lockedOnPiece.GraphicPosition;
+            validMoveVisual.transform.DOMove(board.GetTileCenter(validMove.row, validMove.col) + lockedOnPiece.GraphicPosition, cursorMoveSpeed, false);
+            var newRenderer = validMoveVisual.AddComponent<SpriteRenderer>();
+            var originRenderer = lockedOnPiece.SpriteRenderer;
+            newRenderer.sprite = originRenderer.sprite;
+            newRenderer.color = new Color(originRenderer.color.r, originRenderer.color.g, originRenderer.color.b, originRenderer.color.a / 4f);
+            newRenderer.sortingLayerID = SpriteRenderer.sortingLayerID; // same layer with cursor
+            newRenderer.sortingOrder = originRenderer.sortingOrder;
+
+            newRenderer.transform.localScale = originRenderer.transform.localScale;
+            validMoveVisualList.Add(validMoveVisual.transform);
+            hoveringValidMove = null;
+        }
+    }
+
+    private void MoveChess()
+    {
+        // check if this is a normal move or attacking
+        GameObject targetChess = board.GetTilePieceAt(currentPosition.y, currentPosition.x);
+        if (targetChess != null)
+        {
+            // this is an attack
+            targetChess.GetComponent<ChessPieceProperties>().Attacked(0.15f);
+            Destroy(targetChess, 1f);
+            AudioManager.Instance.PlaySFX("attack", 0.5f);
+            AudioManager.Instance.PlaySFX("compact", 0.5f);
+        }
+
+        // move the selected chess piece to this position index
+        Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex,
+            new TileIndex(currentPosition.y, currentPosition.x));
+
+        // move the chess piece graphic
+        lockedOnPiece.Move(newPiecePosition);
+
+        // canccel the lock on
+        lockedOnPiece.LockOn(false);
+
+        // remove all visualization of valid move
+        foreach (Transform validMoveVisual in validMoveVisualList)
+        {
+            // remove it immediately only if it's not the moving target. 
+            float removeTime = validMoveVisual == hoveringValidMove ? cursorMoveSpeed : 0f;
+            Destroy(validMoveVisual.gameObject, removeTime);
+        }
+
+        // reset list 
+        validMoveVisualList.Clear();
+        hoveringValidMove = null;
+
+        // is this a pawn promotion?
+        if (lockedOnPiece.GetComponent<ChessPieceProperties>().Type == PieceType.Pawn
+            && (currentPosition.y == 7　|| currentPosition.y == 0))
+        {
+            gamestate.Promotion(new TileIndex(currentPosition.y, currentPosition.x));
+        }
+        else
+        {
+            // pass the turn to other side
+            gamestate.Turn();
+        }
+
+        // clear memory
+        lockedOnPiece = null;
+    }
+
+    public void Cancel()
     {
         if (lockedOnPiece != null)
         {
@@ -197,18 +188,9 @@ public class CursorController : MonoBehaviour
         AudioManager.Instance.PlaySFX("cancellockon", 0.75f);
     }
 
-    private void ButtonReleased()
+    public void MoveCursor(Vector2Int value)
     {
-        buttonClicked = false;
-        buttonHoldTime = 0.0f;
-        moveVector = Vector2Int.zero;
-    }
-
-    private void MoveCursor(Vector2Int value)
-    {
-        buttonClicked = true;
         moveVector = value;
-        buttonHoldTime = 0.0f;
 
         // move position of the cursor
         Vector2Int lastPosition = currentPosition;
@@ -263,5 +245,15 @@ public class CursorController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void MoveVectorReset()
+    {
+        moveVector = Vector2Int.zero;
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = board.GetTileCenter(currentPosition.y, currentPosition.x);
     }
 }

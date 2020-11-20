@@ -21,6 +21,7 @@ public enum Team
     White,
 }
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class ChessPieceProperties : MonoBehaviour
 {
     [Header("Reference")]
@@ -46,7 +47,7 @@ public class ChessPieceProperties : MonoBehaviour
 
     [SerializeField] private Team _team = default;
     public Team Team { get { return _team; } }
-    
+
     //Flags for positioning
     [HideInInspector] public bool isPinned = false;
     [HideInInspector] public TileIndex pinningPieceIndex = TileIndex.Null;
@@ -104,19 +105,18 @@ public class ChessPieceProperties : MonoBehaviour
         SpriteRenderer.transform.DOLocalMoveY(originalGraphicPosition.y + selectionJumpRange, speed, false);
     }
 
-    public void Attacked()
+    public void Attacked(float delay)
     {
         // death animation
-        StartCoroutine(Death(transform, 15f, 0.75f));
-
-        // TODO: remove this chess piece from the array
-        //BoardArray.Instance().SetTilePieceAt();
+        StartCoroutine(Death(transform, 15f, 0.75f, delay));
 
         // TODO: shake the screen
     }
 
-    private IEnumerator Death(Transform target, float speed, float time)
+    private IEnumerator Death(Transform target, float speed, float time, float delay)
     {
+        yield return new WaitForSeconds(delay);
+
         float timeElapsed = 0.0f;
 
         // reset the renderer position to 0 so it can spin with a right pivot point
@@ -169,5 +169,32 @@ public class ChessPieceProperties : MonoBehaviour
             SpriteRenderer.material.SetFloat("_OutlineThickness", 0.0f);
             lockOn = false;
         }
+    }
+
+    public void Move(Vector2 newPosition)
+    {
+        StartCoroutine(AfterImage(SpriteRenderer.transform, 0.25f, 0.4f, 0.2f, Time.fixedDeltaTime));
+        transform.DOMove(newPosition, 0.2f);
+    }
+
+    private IEnumerator AfterImage(Transform target, float afterImageTime, float initialAlpha, float duration, float interval)
+    {
+        float timeElapsed = 0.0f;
+        do
+        {
+            // rotate this chess piece
+            timeElapsed += Time.deltaTime;
+
+            // create afterimage
+            var afterImage = new GameObject(gameObject.name + "'s afterimage");
+            var script = afterImage.AddComponent<AfterImage>();
+            script.Initialization(target, afterImageTime, initialAlpha);
+
+            // is a very bad idea to put this in here.
+            UpdateRenderOrder();
+            yield return new WaitForSeconds(interval);
+        } while (timeElapsed < duration);
+
+        yield return null;
     }
 }

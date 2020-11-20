@@ -8,8 +8,11 @@ public class GameStateManager : MonoBehaviour
     // Reference
     [SerializeField] GameObject chessBoard = default;
     [SerializeField] ParticleSystem dust = default;
-    [SerializeField] GameObject cursor = default;
+    [SerializeField] CursorController playerCursor = default, enemyCursor = default;
     [SerializeField] UICanvas UICanvas = default;
+    [SerializeField] GameObject promotionUI = default;
+
+    private bool isPlayerTurn;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +39,7 @@ public class GameStateManager : MonoBehaviour
             for (int j = -8; j <= 8; j++)
             {
                 var particle = Instantiate(dust, new Vector3(i * 0.5f, j * 0.5f, 0), Quaternion.identity);
-                Destroy(particle.gameObject, particle.GetComponent<ParticleSystem>().main.duration - 0.1f);
+                Destroy(particle.gameObject, particle.GetComponent<ParticleSystem>().main.duration);
             }
         }
 
@@ -44,8 +47,6 @@ public class GameStateManager : MonoBehaviour
 
         StartCoroutine(GetComponent<ChessManager>().InitiateChess());
         chessBoard.GetComponentInChildren<CanvasGroup>().DOFade(1.0f, 3f);
-        cursor.SetActive(true);
-        cursor.GetComponent<SpriteRenderer>().DOFade(1.0f, 2f);
 
         //AudioManager.Instance.SetMusicVolume(0.5f);
         //AudioManager.Instance.PlayMusicWithFade("theme", 3f);
@@ -53,6 +54,54 @@ public class GameStateManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         UICanvas.CharacterMoveIn(0.5f);
+
+        // Enable cursor
+        InitiateCursor(playerCursor);
+        playerCursor.GetComponent<Input>().SetControlActive(true);
+        InitiateCursor(enemyCursor);
+        enemyCursor.GetComponent<CursorAIInput>().active = true;
+
+        // player start first
+        isPlayerTurn = false;
+        Turn();
+    }
+
+    public void Turn()
+    {
+        isPlayerTurn = !isPlayerTurn;   // switch player
+        if (isPlayerTurn)
+        {
+            playerCursor.isInTurn = true;
+            enemyCursor.isInTurn = false;
+        }
+        else
+        {
+            playerCursor.isInTurn = false;
+            enemyCursor.isInTurn = true;
+            Debug.Log(enemyCursor.GetComponent<CursorAIInput>().MoveTo(new TileIndex(Random.Range(0, 7), Random.Range(0, 7))));
+        }
+        Debug.Log("player turn " + isPlayerTurn);
+        // UI
+        UICanvas.PlayerTurn(isPlayerTurn);
+    }
+
+    // display selection UI when a pawn got promoted
+    public void Promotion(TileIndex targetIndex)
+    {
+        // disable both cursor first
+        playerCursor.isInTurn = false;
+        playerCursor.GetComponent<Input>().SetControlActive(false);
+        enemyCursor.isInTurn = false;
+
+        GameObject tmp = Instantiate(promotionUI, UICanvas.transform);
+        tmp.GetComponent<PromotionUI>().SetPromotionTarget(targetIndex, this);
+    }
+
+    // when the promotion is finished
+    public void Promoted()
+    {
+        playerCursor.GetComponent<Input>().SetControlActive(true);
+        Turn();
     }
 
     private IEnumerator Shake(Transform target, float magnitude, float time)
@@ -69,5 +118,13 @@ public class GameStateManager : MonoBehaviour
         } while (timeElapsed < time);
 
         target.position = originalPosition;
+    }
+
+    private void InitiateCursor(CursorController target)
+    {
+        target.gameObject.SetActive(true);
+        target.SpriteRenderer.DOFade(1.0f, 0.1f);
+        target.ResetPosition();
+        target.gamestate = this;
     }
 }
