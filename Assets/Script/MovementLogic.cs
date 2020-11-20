@@ -258,7 +258,7 @@ public class MovementLogic
                                                 BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
                                                 break;
                                             case PieceType.Rook:
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).isPinned = mode == AlignmentMode.Diagonal;
+                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).isPinned = mode == AlignmentMode.Cardinal;
                                                 BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
                                                 break;
                                         }
@@ -451,13 +451,14 @@ public class MovementLogic
             if (piece.pinningPieceIndex != TileIndex.Null)
             {
                 List<TileIndex> tmpList = new List<TileIndex>();
-                foreach (TileIndex point in GetPointsBetween(king, piece.pinningPieceIndex))
+                foreach (TileIndex point in GetPointsBetween(king, piece.pinningPieceIndex, true))
                 {
                     if (moveList.Contains(point))
                     {
                         tmpList.Add(point);
                     }
                 }
+                
                 moveList.Clear();
                 moveList = tmpList;
             }
@@ -708,7 +709,7 @@ public class MovementLogic
         return false;
     }
 
-    public List<TileIndex> GetPointsBetween(TileIndex a, TileIndex b)
+    public List<TileIndex> GetPointsBetween(TileIndex a, TileIndex b, bool isBIncluded = false)
     {
         List<TileIndex> points = new List<TileIndex>();
 
@@ -728,6 +729,10 @@ public class MovementLogic
         {
             points.Add(point);
             point += increment;
+        }
+        if (isBIncluded)
+        {
+            points.Add(b);
         }
 
         return points;
