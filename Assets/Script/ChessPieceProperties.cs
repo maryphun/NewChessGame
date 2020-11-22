@@ -227,4 +227,9 @@ public class ChessPieceProperties : MonoBehaviour
             yield return null;
         }
     }
+
+    public void GameLost()
+    {
+        SpriteRenderer.transform.DORotate(new Vector3(0, 0, 90 * (Random.Range(0, 2) * 2) - 1), 1f, RotateMode.LocalAxisAdd);
+    }
 }
