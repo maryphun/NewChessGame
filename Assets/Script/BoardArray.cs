@@ -141,15 +141,15 @@ public class BoardArray : Singleton<BoardArray>
         return GetPieceLocation(properties.Team, properties.Id);
     }
 
-    //Note: Slower than ChessPieceProperties overload
-    public TileIndex GetPieceLocation(GameObject obj)
+    //Returns properties of the specified piece 
+    public ChessPieceProperties GetPieceProperties(Team team, PieceID id)
     {
-        ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
-        if (properties!=null)
-            return GetPieceLocation(properties.Team, properties.Id);
-        return TileIndex.Null;
-    }
+        TileIndex location = GetPieceLocation(team, id);
+        if (location == TileIndex.Null)
+            return null;
 
+        return GetTilePiecePropertiesAt(location);
+    }
 
     //Get the object reference held at the provided index
     public GameObject GetTilePieceAt(int row, int column)

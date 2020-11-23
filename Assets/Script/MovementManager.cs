@@ -20,11 +20,22 @@ public class MovementManager : Singleton<MovementManager>
     /// </summary>
     public Vector2 MoveChessPiece(GameObject chess, TileIndex origin, TileIndex target)
     {
+        if (board.GetTilePiecePropertiesAt(target) != null)
+        {
+            //Taking Piece
+            board.ClearTrackerAt(target.row, target.col);
+            
+        }
+        //If valid set the flag for a pawn double move
+        logic.CheckDoubleMoveFlag(origin, target);
+
         // replace and update the data on the array side
         board.RemoveTilePieceAt(origin.row, origin.col);
         board.SetTilePieceAt(target.row, target.col, chess);
         // update
         logic.UpdateValidMoves();
+        //Reset pawn Double Move Flag
+        logic.ResetDoubleMoveFlag(target);
         // return new position of the chess piece to move
         return board.GetTileCenter(target.row, target.col);
     }

@@ -57,7 +57,7 @@ public class MovementLogic
     {
         if (IsMoveAvaliable(team))
             return false;
-        
+
         if (team == Team.White)
         {
             return isWInCheck;
@@ -74,7 +74,7 @@ public class MovementLogic
 
     }
 
-    public bool IsInStalemate (Team team)
+    public bool IsInStalemate(Team team)
     {
         if (IsMoveAvaliable(team))
             return false;
@@ -143,17 +143,18 @@ public class MovementLogic
             return;
 
         TileMask<bool> threats = king.Team == Team.White ? allThreatenedTileMaskB : allThreatenedTileMaskW;
-
+        //Debug.Log("King has moved: " + king.isHasMoved);
         if (king.Type == PieceType.King && king.isHasMoved == false)
         {
             //King is on starting square and hasn't moved
-            var rightRook = BoardArray.Instance().GetTilePiecePropertiesAt(row, 7);
-            var leftRook = BoardArray.Instance().GetTilePiecePropertiesAt(row, 0);
-            if (leftRook != null)
+            var kingSideRook = BoardArray.Instance().GetPieceProperties(king.Team, PieceID.KingSideRook);
+            var queenSideRook = BoardArray.Instance().GetPieceProperties(king.Team, PieceID.QueenSideRook);
+            if (queenSideRook != null)
             {
-                if (leftRook.Type == PieceType.Rook && leftRook.isHasMoved)
+                //Debug.Log("QueenSideRook has moved: " + queenSideRook.isHasMoved);
+                if (!queenSideRook.isHasMoved)
                 {
-                    Debug.Log("Checking Left castle rule");
+                    //Debug.Log("Checking Queen-side castle rule");
                     //Left Rook on starting square and hasn't moved
                     //Check no piece at other squares;
                     bool isClear = true;
@@ -183,15 +184,15 @@ public class MovementLogic
                 }
             }
 
-            if (rightRook != null)
+            if (kingSideRook != null)
             {
-                if (rightRook.Type == PieceType.Rook && rightRook.isHasMoved)
+                if (!kingSideRook.isHasMoved)
                 {
-                    Debug.Log("Checking right castle rule");
+                    //Debug.Log("Checking King-side castle rule");
                     //Right Rook on starting square and hasn't moved
                     //Check no piece at other squares;
                     bool isClear = true;
-                    for (int i = 7; i > 4; i--)
+                    for (int i = 6; i > 4; i--)
                     {
                         if (null != BoardArray.Instance().GetTilePiecePropertiesAt(row, i))
                         {
@@ -814,6 +815,34 @@ public class MovementLogic
     bool IsIndexOnBoard(TileIndex index)
     {
         return index.row < 8 && index.row >= 0 && index.col < 8 && index.col >= 0;
+    }
+
+    public void CheckDoubleMoveFlag(TileIndex pieceIndex, TileIndex end)
+    {
+        ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(pieceIndex);
+        if (piece != null)
+        {
+            if (PieceType.Pawn == piece.Type)
+            {
+                if (!piece.isHasMoved)
+                {
+                    if (Mathf.Abs(end.row - pieceIndex.row) == 2)
+                    {
+                        piece.isHasJustDoubleMoved = true;
+                        Debug.Log("Set double move flag for " + piece.Team + " " + piece.Id.ToString());
+                    }
+                }
+            }
+        }
+    }
+
+    public void ResetDoubleMoveFlag(TileIndex pieceIndex)
+    {
+        ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(pieceIndex);
+        if (piece != null)
+        {
+            piece.isHasJustDoubleMoved = false;
+        }
     }
 
 }
