@@ -339,8 +339,8 @@ public class MovementLogic
     {
         TileIndex wKing = BoardArray.Instance().wKingIndex;
         TileIndex bKing = BoardArray.Instance().bKingIndex;
-        Debug.Log("White King Position" + wKing.row + ", " + wKing.col);
-        Debug.Log("Black King Position" + bKing.row + ", " + bKing.col);
+        //Debug.Log("White King Position" + wKing.row + ", " + wKing.col);
+        //Debug.Log("Black King Position" + bKing.row + ", " + bKing.col);
         isWInCheck = allThreatenedTileMaskB[wKing];
         isBInCheck = allThreatenedTileMaskW[bKing];
         if (isWInCheck && isBInCheck) Debug.LogException(new Exception("Both kings flagged as in check"));

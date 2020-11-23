@@ -211,7 +211,7 @@ public class ChessPieceProperties : MonoBehaviour
         }
         else
         {
-            Debug.Log("stop");
+            //Debug.Log("stop");
             SpriteRenderer.transform.localPosition = originalGraphicPosition;
             StopCoroutine(shake);
             SpriteRenderer.material.SetFloat("_OutlineThickness", 0.0f);

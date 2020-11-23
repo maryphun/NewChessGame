@@ -126,6 +126,7 @@ public class CursorController : MonoBehaviour
         if (targetChess != null)
         {
             // this is an attack
+            BoardArray.Instance().ClearTrackerAt(currentPosition.y, currentPosition.x);
             targetChess.GetComponent<ChessPieceProperties>().Attacked(0.15f);
             Destroy(targetChess, 1f);
             AudioManager.Instance.PlaySFX("attack", 0.5f);

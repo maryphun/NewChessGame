@@ -99,12 +99,58 @@ public class BoardArray : Singleton<BoardArray>
 
     }
 
-    // unregister the piece in this index
+    //unregister the piece in this index
     public void RemoveTilePieceAt(int row, int column)
     {
+        
         pieces[this.Index2DToIndex(row, column)] = null;
     }
-    
+
+    //Remove pieces tracking position
+    public void ClearTrackerAt(int row, int column)
+    {
+        ChessPieceProperties piece = GetTilePiecePropertiesAt(row, column);
+        if (piece != null) {
+            if (piece.Team == Team.White)
+                wPieceLocations[(int)piece.Id] = TileIndex.Null;
+            else if (piece.Team == Team.Black)
+                bPieceLocations[(int)piece.Id] = TileIndex.Null;
+            else
+                Debug.LogError("Attempted to stop tracking piece without a team"); 
+        }
+        else
+        {
+            Debug.LogError("Attempted to stop tracking on tile with no piece");
+        }
+        Debug.Log("Cleared "+ piece.Team + " "+ piece.Id + " Tracker. Now " + bPieceLocations[(int)piece.Id].row + ", "+ bPieceLocations[(int)piece.Id].col);
+    }
+
+    //Returns the specified pieces location on the board.
+    public TileIndex GetPieceLocation(Team team, PieceID id)
+    {
+        if (team == Team.White)
+            return wPieceLocations[(int)id];
+        else if (team == Team.Black)
+            return bPieceLocations[(int)id];
+        else
+            return TileIndex.Null;
+    }
+
+    public TileIndex GetPieceLocation(ChessPieceProperties properties)
+    {
+        return GetPieceLocation(properties.Team, properties.Id);
+    }
+
+    //Note: Slower than ChessPieceProperties overload
+    public TileIndex GetPieceLocation(GameObject obj)
+    {
+        ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
+        if (properties!=null)
+            return GetPieceLocation(properties.Team, properties.Id);
+        return TileIndex.Null;
+    }
+
+
     //Get the object reference held at the provided index
     public GameObject GetTilePieceAt(int row, int column)
     {
@@ -113,6 +159,7 @@ public class BoardArray : Singleton<BoardArray>
         
         return pieces[this.Index2DToIndex(row, column)].gameObject;
     }
+
     public GameObject GetTilePieceAt(TileIndex index)
     {
         return GetTilePieceAt(index.row, index.col);
