@@ -4,13 +4,34 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
+public enum PieceID
+{
+    None = -1,
+    APawn = 0,
+    BPawn = 1,
+    CPawn = 2,
+    DPawn = 3,
+    EPawn = 4,
+    FPawn = 5,
+    GPawn = 6,
+    HPawn = 7,
+    QueenSideRook = 8,
+    KingSideRook = 9,
+    QueenSideKnight = 10,
+    KingSideKnight = 11,
+    QueenSideBishop = 12,
+    KingSideBishop = 13,
+    Queen = 14,
+    King = 15,
+}
 
 
 
 public class BoardArray : Singleton<BoardArray>
 {
 
+    private TileIndex[] wPieceLocations;
+    private TileIndex[] bPieceLocations;
 
     private IndexTileMask _indicies;
     public TileIndex[] Indicies {
@@ -35,6 +56,8 @@ public class BoardArray : Singleton<BoardArray>
     {
         
         base.Awake();
+        wPieceLocations = new TileIndex[16];
+        bPieceLocations = new TileIndex[16];
         _indicies = new IndexTileMask();
         tileCenterPosition = new Vector2[64];
         pieces = new ChessPieceProperties[64];
@@ -44,11 +67,25 @@ public class BoardArray : Singleton<BoardArray>
     }
     
     //Sets the object reference held at the provided index
-    public void SetTilePieceAt(int row, int column, GameObject obj, bool isInitial = false)
+    public void SetTilePieceAt(int row, int column, GameObject obj, PieceID id = PieceID.None, bool isInitial = false)
     {
         ChessPieceProperties properties = obj.GetComponent<ChessPieceProperties>();
         pieces[this.Index2DToIndex(row, column)] = properties;
-        if(properties.Type == PieceType.King)
+        
+        if(isInitial)
+            properties.SetId(id);
+        
+
+        if(properties.Team == Team.White) 
+            wPieceLocations[(int)properties.Id] = new TileIndex(row, column);
+        if (properties.Team == Team.Black)
+            bPieceLocations[(int)properties.Id] = new TileIndex(row, column);
+
+        //Debug.Log("Piece: " + obj.name + 
+        //    " ID: " + properties.Id.ToString() + 
+        //    " Location: " + Utils.Index2DToIndex(properties.Team==Team.White ? wPieceLocations[(int)properties.Id]:bPieceLocations[(int)properties.Id]));
+
+        if (properties.Type == PieceType.King)
         {
             if (properties.Team == Team.White)
                 wKingIndex = new TileIndex(row, column);

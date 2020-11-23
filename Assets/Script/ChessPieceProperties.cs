@@ -43,6 +43,9 @@ public class ChessPieceProperties : MonoBehaviour
     private Vector2 originalGraphicPosition;
     public Vector2 GraphicPosition { get { return originalGraphicPosition; } }
 
+    [SerializeField] private PieceID _id = default;
+    public PieceID Id { get { return _id; } }
+
     [SerializeField] private PieceType _type = default;
     public PieceType Type { get { return _type; } }
 
@@ -91,10 +94,9 @@ public class ChessPieceProperties : MonoBehaviour
         return SpriteRenderer.sortingOrder;
     }
 
-
-    public void CasheValidMoves()
+    public void SetId(PieceID id)
     {
-
+        _id = id;
     }
 
     public void Unselect(float speed)

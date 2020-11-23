@@ -1464,13 +1464,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a33f576c04ac2549817ecdffd78aeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alwaysPlayerTurn: 1
   chessBoard: {fileID: 674515585}
   dust: {fileID: 6491845401687680021, guid: a4010389c9091c04f93254048a39bbcd, type: 3}
   playerCursor: {fileID: 1160386418}
   enemyCursor: {fileID: 1217902195}
   UICanvas: {fileID: 1508003248}
   promotionUI: {fileID: 3388212638507804793, guid: 11251f9ddb20383409c0bfdcfdfc2e02, type: 3}
-  alwaysPlayerTurn: 1
 --- !u!4 &1118887949
 Transform:
   m_ObjectHideFlags: 0
@@ -2890,7 +2890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1872664030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4037,7 +4037,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2103978283
 MonoBehaviour:
   m_ObjectHideFlags: 0
