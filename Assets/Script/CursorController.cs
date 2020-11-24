@@ -11,16 +11,19 @@ public class CursorController : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField] private Vector2Int initialPosition = new Vector2Int(4, 4);
+    [SerializeField] private bool canMoveEnemyChess = false;
 
-    public Team cursorTeam;
     private BoardArray board;
-    public GameStateManager gamestate;
     private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
     private TileIndex lockedOnPieceIndex;
     private List<Transform> validMoveVisualList;
     private List<ChessPieceProperties> threateningChess;
     private Transform hoveringValidMove;
+
     public bool isInTurn;
+    public Team cursorTeam;
+    public GameStateManager gamestate;
+
 
     // get only
     private Vector2Int currentPosition, moveVector;
@@ -36,12 +39,12 @@ public class CursorController : MonoBehaviour
         threateningChess = new List<ChessPieceProperties>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        
+
         currentPosition = initialPosition;
         lockedOnPiece = null;
     }
 
-    
+
     public void Confirm()
     {
         if (!isInTurn)  // not your turn
@@ -70,7 +73,7 @@ public class CursorController : MonoBehaviour
                     CancelLockOn(piece);
                 }
             }
-            else if (piece.Team == cursorTeam)  // last condition: this chess is belong to this player
+            else if (piece.Team == cursorTeam || canMoveEnemyChess)  // last condition: this chess is belong to this player
             {
                 LockOnChess(piece, new TileIndex(currentPosition.y, currentPosition.x));
 
@@ -109,7 +112,7 @@ public class CursorController : MonoBehaviour
 
             // check if this is an attack move
             var attackTarget = board.GetTilePiecePropertiesAt(validMove);
-            if (attackTarget != null 
+            if (attackTarget != null
                 && attackTarget.Team != cursorTeam)
             {
                 newRenderer.sprite = null;
@@ -121,9 +124,28 @@ public class CursorController : MonoBehaviour
 
     private void MoveChess()
     {
+        TileIndex moveTargetIndex = new TileIndex(currentPosition.y, currentPosition.x);
+
         // check if this is a normal move or attacking
-        GameObject targetChess = board.GetTilePieceAt(currentPosition.y, currentPosition.x);
+        GameObject targetChess = board.GetTilePieceAt(moveTargetIndex.row, moveTargetIndex.col);
+        bool isAttackMove = false;
+
         if (targetChess != null)
+        {
+            isAttackMove = true;
+        }
+        else if (IsEnPassant(lockedOnPieceIndex, moveTargetIndex, lockedOnPiece))
+        {
+            isAttackMove = true;
+            targetChess = board.GetTilePieceAt(lockedOnPieceIndex.row, moveTargetIndex.col);
+        }
+        else if (IsCastling(lockedOnPieceIndex, moveTargetIndex, lockedOnPiece))
+        {
+            //Castling!!!!!!!!!
+            Castling(moveTargetIndex);
+        }
+
+        if (isAttackMove)
         {
             // this is an attack
             targetChess.GetComponent<ChessPieceProperties>().Attacked(0.15f);
@@ -133,8 +155,7 @@ public class CursorController : MonoBehaviour
         }
 
         // move the selected chess piece to this position index
-        Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex,
-            new TileIndex(currentPosition.y, currentPosition.x));
+        Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex, moveTargetIndex);
 
         // move the chess piece graphic
         lockedOnPiece.Move(newPiecePosition);
@@ -163,9 +184,9 @@ public class CursorController : MonoBehaviour
 
         // is this a pawn promotion?
         if (lockedOnPiece.GetComponent<ChessPieceProperties>().Type == PieceType.Pawn
-            && (currentPosition.y == 7　|| currentPosition.y == 0))
+            && (moveTargetIndex.row == 7 || moveTargetIndex.row == 0))
         {
-            gamestate.Promotion(new TileIndex(currentPosition.y, currentPosition.x));
+            gamestate.Promotion(moveTargetIndex);
         }
         else
         {
@@ -196,7 +217,7 @@ public class CursorController : MonoBehaviour
             validMoveVisual.DOMove(((Vector2)lockedOnPiece.transform.position) + lockedOnPiece.GraphicPosition, cursorMoveSpeed, false);
             Destroy(validMoveVisual.gameObject, cursorMoveSpeed);
         }
-        
+
         // remove all visualization of threateningChess
         foreach (ChessPieceProperties attackingChess in threateningChess)
         {
@@ -282,5 +303,88 @@ public class CursorController : MonoBehaviour
     public void ResetPosition()
     {
         transform.position = board.GetTileCenter(currentPosition.y, currentPosition.x);
+    }
+
+    private bool IsEnPassant(TileIndex moveOrigin, TileIndex moveTarget, ChessPieceProperties movingChess)
+    {
+        return (movingChess.Type == PieceType.Pawn  // check if En passant is happening if it's a pawn
+            && moveOrigin.col != moveTarget.col);  // this pawn is moving diagonally
+    }
+
+    private bool IsCastling(TileIndex moveOrigin, TileIndex moveTarget, ChessPieceProperties movingChess)
+    {
+        bool ret = false;
+
+        // check on the king piece
+        if (movingChess.Type == PieceType.King
+            && movingChess.isHasMoved == false
+            && Mathf.Abs(moveOrigin.col - moveTarget.col) == 2)
+        {
+            // check on the rook piece
+            // determine which rook to check 
+            int targetArray;
+            if (moveTarget.col > moveOrigin.col)
+            {
+                targetArray = 7;
+            }
+            else
+            {
+                targetArray = 0;
+            }
+
+            ChessPieceProperties rook;
+            rook = board.GetTilePiecePropertiesAt(new TileIndex(moveOrigin.row, targetArray));
+
+            if (rook != null)
+            {
+                if (rook.Type == PieceType.Rook
+                    && rook.isHasMoved == false)
+                {
+                    // Conclusion : castling!
+                    ret = true;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    private void Castling(TileIndex kingMove)
+    {
+        // Determine the new location for rook
+        TileIndex rookMoveTarget = kingMove;
+        // Get Rook reference
+        int targetArray = -1;
+
+        if (kingMove.col <= 2)
+        {
+            rookMoveTarget.col = kingMove.col + 1;
+            targetArray = 0;
+        }
+        else if (kingMove.col >= 5)
+        {
+            rookMoveTarget.col = kingMove.col - 1;
+            targetArray = 7;
+        }
+
+        ChessPieceProperties rook;
+        rook = board.GetTilePiecePropertiesAt(new TileIndex(rookMoveTarget.row, targetArray));
+
+        if (rook != null
+            && board.GetTilePiecePropertiesAt(rookMoveTarget) == null) // target location is available to move too, just to double check
+        {
+            Debug.Log("from " + new TileIndex(rookMoveTarget.row, targetArray) + " move to " + rookMoveTarget);
+            // move the selected chess piece to this position index
+            Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(rook.gameObject, 
+                new TileIndex(rookMoveTarget.row, targetArray), rookMoveTarget);
+
+            // move the chess piece graphic
+            rook.Move(newPiecePosition);
+
+            // Castling end.
+            return;
+        }
+
+        Debug.LogWarning("Castling Error: no refernece found for rook");
     }
 }

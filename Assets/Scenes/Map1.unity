@@ -3525,6 +3525,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6368043574289772932, guid: a5f2647a71be2fe42bc015b0e2b361ef, type: 3}
+      propertyPath: isInTurn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368043574289772932, guid: a5f2647a71be2fe42bc015b0e2b361ef, type: 3}
+      propertyPath: canMoveEnemyChess
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8675551815777074043, guid: a5f2647a71be2fe42bc015b0e2b361ef, type: 3}
       propertyPath: m_Name
       value: CursorPlayer
