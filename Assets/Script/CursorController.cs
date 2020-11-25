@@ -12,6 +12,7 @@ public class CursorController : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private Vector2Int initialPosition = new Vector2Int(4, 4);
     [SerializeField] private bool canMoveEnemyChess = false;
+    [SerializeField] private MovementManager moveManager;
 
     private BoardArray board;
     private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
@@ -34,7 +35,7 @@ public class CursorController : MonoBehaviour
 
     private void Awake()
     {
-        board = BoardArray.Instance();
+        board = moveManager.board;
         validMoveVisualList = new List<Transform>();
         threateningChess = new List<ChessPieceProperties>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -91,7 +92,7 @@ public class CursorController : MonoBehaviour
         lockedOnPieceIndex = index;
 
         // get all valid move for this chess piece
-        var validMoves = MovementManager.Instance().logic.GetValidMoves(index);
+        var validMoves = moveManager.logic.GetValidMoves(index);
 
         // visualize valid move
         foreach (TileIndex validMove in validMoves)
@@ -155,7 +156,7 @@ public class CursorController : MonoBehaviour
         }
 
         // move the selected chess piece to this position index
-        Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex, moveTargetIndex);
+        Vector2 newPiecePosition = moveManager.MoveChessPiece(lockedOnPiece.gameObject, lockedOnPieceIndex, moveTargetIndex);
 
         // move the chess piece graphic
         lockedOnPiece.Move(newPiecePosition);
@@ -375,7 +376,7 @@ public class CursorController : MonoBehaviour
         {
             Debug.Log("from " + new TileIndex(rookMoveTarget.row, targetArray) + " move to " + rookMoveTarget);
             // move the selected chess piece to this position index
-            Vector2 newPiecePosition = MovementManager.Instance().MoveChessPiece(rook.gameObject, 
+            Vector2 newPiecePosition = moveManager.MoveChessPiece(rook.gameObject, 
                 new TileIndex(rookMoveTarget.row, targetArray), rookMoveTarget);
 
             // move the chess piece graphic

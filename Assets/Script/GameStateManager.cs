@@ -101,8 +101,8 @@ public class GameStateManager : MonoBehaviour
         playerCursor.GetComponent<Input>().SetControlActive(false);
         enemyCursor.isInTurn = false;
 
-        GameObject tmp = Instantiate(promotionUI, UICanvas.transform);
-        tmp.GetComponent<PromotionUI>().SetPromotionTarget(targetIndex, this);
+        promotionUI.SetActive(true);
+        promotionUI.GetComponent<PromotionUI>().SetPromotionTarget(targetIndex, this);
     }
 
     // when the promotion is finished

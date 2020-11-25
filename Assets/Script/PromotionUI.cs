@@ -22,10 +22,13 @@ public class PromotionUI : MonoBehaviour
     private GameObject[]
         bReplacePrefab = default,
         wReplacePrefab = default;
+    
+    [SerializeField] private MovementManager moveManager;
 
     private CursorInput input = null;
     private int currentChoice;
     private BoardArray board;
+    
     private TileIndex targetindex;
     private GameStateManager gamestate;
 
@@ -42,8 +45,8 @@ public class PromotionUI : MonoBehaviour
     void Awake()
     {
         // reference
-        board = BoardArray.Instance();
-
+        board = moveManager.board;
+        
         // register movement key
         KeyInput.Default.MoveHorizontal.performed += ctx => MoveSelection((int)ctx.ReadValue<float>());
         KeyInput.Default.Confirm.performed += _ => Select(currentChoice);
@@ -51,11 +54,7 @@ public class PromotionUI : MonoBehaviour
 
     private void Start()
     {
-        currentChoice = 0;
-        MoveSelection(0);   // default choice
-
-        canvasGroup.DOFade(1.0f, 0.2f);
-        AudioManager.Instance.PlaySFX("promotion");
+        
     }
 
     private void OnEnable()
@@ -81,7 +80,7 @@ public class PromotionUI : MonoBehaviour
         {
             GameObject newPiece = Instantiate(replacePrefab, targetpiece.transform.position, Quaternion.identity, targetpiece.transform.parent);
 
-            MovementManager.Instance().ReplaceChessPiece(newPiece, targetindex);
+            moveManager.ReplaceChessPiece(newPiece, targetindex);
 
             Destroy(targetpiece);
 
@@ -89,7 +88,7 @@ public class PromotionUI : MonoBehaviour
 
             // remove this canvas
             canvasGroup.DOFade(0.0f, 0.2f);
-            Destroy(gameObject, 0.2f);
+            Invoke("SetInactive", 0.2f);
         }
         else
         {
@@ -98,6 +97,11 @@ public class PromotionUI : MonoBehaviour
         }
 
         AudioManager.Instance.PlaySFX("promoted");
+    }
+
+    private void SetInactive()
+    {
+        gameObject.SetActive(false);
     }
 
     private void MoveSelection(int move)
@@ -118,6 +122,12 @@ public class PromotionUI : MonoBehaviour
 
     public void SetPromotionTarget(TileIndex index, GameStateManager reference)
     {
+        currentChoice = 0;
+        MoveSelection(0);   // default choice
+
+        canvasGroup.DOFade(1.0f, 0.2f);
+        AudioManager.Instance.PlaySFX("promotion");
+
         targetindex = index;
         gamestate = reference;
     }

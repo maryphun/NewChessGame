@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
 
+[RequireComponent(typeof(MovementManager))]
 public class ChessManager : MonoBehaviour
 {
     [SerializeField] private Transform chessPieceHolder = default;
@@ -26,6 +28,7 @@ public class ChessManager : MonoBehaviour
     private GameObject wKing, wQueen, bKing, bQueen;
     
     private BoardArray board;
+    private MovementManager moveManager;
     private List<GameObject> whitePieces, blackPieces;
 
     private void Awake()
@@ -39,8 +42,10 @@ public class ChessManager : MonoBehaviour
         bKnights = new GameObject[2];
         bRooks = new GameObject[2];
         bBishops = new GameObject[2];
+
+        moveManager = GetComponent<MovementManager>();
+        board = moveManager.board;
         
-        board = BoardArray.Instance();
         whitePieces = new List<GameObject>();
         blackPieces = new List<GameObject>();
     }
@@ -164,6 +169,6 @@ public class ChessManager : MonoBehaviour
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
             pieces.transform.SetParent(chessPieceHolder);
         }
-        MovementManager.Instance().logic.UpdateValidMoves();
+        moveManager.logic.UpdateValidMoves();
     }
 }

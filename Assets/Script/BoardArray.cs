@@ -27,7 +27,7 @@ public enum PieceID
 
 
 
-public class BoardArray : Singleton<BoardArray>
+public class BoardArray
 {
 
     private TileIndex[] wPieceLocations;
@@ -52,10 +52,8 @@ public class BoardArray : Singleton<BoardArray>
     private Vector2[] tileCenterPosition; //this is worldspace position
     private ChessPieceProperties[] pieces;
 
-    protected override void Awake()
+    public BoardArray(Vector2 boardCenterPosition)
     {
-        
-        base.Awake();
         wPieceLocations = new TileIndex[16];
         bPieceLocations = new TileIndex[16];
         _indicies = new IndexTileMask();
@@ -63,7 +61,7 @@ public class BoardArray : Singleton<BoardArray>
         pieces = new ChessPieceProperties[64];
         wKingThreats = new List<TileIndex>();
         bKingThreats = new List<TileIndex>();
-        UpdateTileCenters();
+        UpdateTileCenters(boardCenterPosition);
     }
     
     //Sets the object reference held at the provided index
@@ -122,7 +120,8 @@ public class BoardArray : Singleton<BoardArray>
         {
             Debug.LogError("Attempted to stop tracking on tile with no piece");
         }
-        Debug.Log("Cleared "+ piece.Team + " "+ piece.Id + " Tracker. Now " + bPieceLocations[(int)piece.Id].row + ", "+ bPieceLocations[(int)piece.Id].col);
+        if (piece.Team == Team.Black) Debug.Log("Cleared " + piece.Team + " " + piece.Id + " Tracker. Now " + bPieceLocations[(int)piece.Id].row + ", " + bPieceLocations[(int)piece.Id].col);
+        if (piece.Team == Team.White) Debug.Log("Cleared "+ piece.Team + " "+ piece.Id + " Tracker. Now " + wPieceLocations[(int)piece.Id].row + ", "+ wPieceLocations[(int)piece.Id].col);
     }
 
     //Returns the specified pieces location on the board.
@@ -183,9 +182,9 @@ public class BoardArray : Singleton<BoardArray>
 
 
     //Adjusts the Tile centers in the case that the board has moved.
-    public void UpdateTileCenters()
+    public void UpdateTileCenters(Vector2 center)
     {
-        Vector2 firstCell = new Vector2(transform.position.x - tileSize * 7 / 2, transform.position.y - tileSize * 7 / 2);
+        Vector2 firstCell = new Vector2(center.x - tileSize * 7 / 2, center.y - tileSize * 7 / 2);
         for (int row = 0; row < 8; row++)
         {
             for (int col = 0; col < 8; col++)

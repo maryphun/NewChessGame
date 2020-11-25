@@ -6,6 +6,7 @@ using UnityEngine;
 public class MovementLogic
 {
     //TODOList:
+    public BoardArray board;
 
     public bool isWInCheck;
     public bool isBInCheck;
@@ -22,6 +23,11 @@ public class MovementLogic
         Both,
     }
 
+    public MovementLogic(BoardArray board)
+    {
+        this.board = board;
+    }
+
     public List<TileIndex> GetValidMoves(TileIndex index)
     {
         return allMoves[index];
@@ -33,7 +39,7 @@ public class MovementLogic
         //Clear pinned piece flags
         for (int i = 0; i < 64; i++)
         {
-            var tmpPiece = BoardArray.Instance().GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
+            var tmpPiece = board.GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
             if (tmpPiece != null)
             {
                 tmpPiece.isPinned = false;
@@ -100,7 +106,7 @@ public class MovementLogic
         bool isValidMoveFound = false;
         for (int i = 0; i < allMoves.Length; i++)
         {
-            ChessPieceProperties tmpPiece = BoardArray.Instance().GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
+            ChessPieceProperties tmpPiece = board.GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
             if (tmpPiece != null)
             {
                 if (tmpPiece.Team == team)
@@ -119,7 +125,7 @@ public class MovementLogic
     //Temp Debug function
     void PrintWhiteThreats()
     {
-        foreach (TileIndex index in BoardArray.Instance().Indicies)
+        foreach (TileIndex index in board.Indicies)
         {
             Debug.Log("White Threats, Tile: " + index.row + ", " + index.col + " Threatened: " + allThreatenedTileMaskW[index]);
         }
@@ -127,7 +133,7 @@ public class MovementLogic
     //Temp Debug function
     void PrintBlackThreats()
     {
-        foreach (TileIndex index in BoardArray.Instance().Indicies)
+        foreach (TileIndex index in board.Indicies)
         {
             Debug.Log("Black Threats, Tile: " + index.row + ", " + index.col + " Threatened: " + allThreatenedTileMaskB[index]);
         }
@@ -138,7 +144,7 @@ public class MovementLogic
     private void AddRowCastleMoves(int row)
     {
         TileIndex kingStartIndex = new TileIndex(row, 4);
-        var king = BoardArray.Instance().GetTilePiecePropertiesAt(kingStartIndex);
+        var king = board.GetTilePiecePropertiesAt(kingStartIndex);
         if (king == null)
             return;
 
@@ -147,8 +153,8 @@ public class MovementLogic
         if (king.Type == PieceType.King && king.isHasMoved == false)
         {
             //King is on starting square and hasn't moved
-            var kingSideRook = BoardArray.Instance().GetPieceProperties(king.Team, PieceID.KingSideRook);
-            var queenSideRook = BoardArray.Instance().GetPieceProperties(king.Team, PieceID.QueenSideRook);
+            var kingSideRook = board.GetPieceProperties(king.Team, PieceID.KingSideRook);
+            var queenSideRook = board.GetPieceProperties(king.Team, PieceID.QueenSideRook);
             if (queenSideRook != null)
             {
                 //Debug.Log("QueenSideRook has moved: " + queenSideRook.isHasMoved);
@@ -160,7 +166,7 @@ public class MovementLogic
                     bool isClear = true;
                     for (int i = 1; i < 4; i++)
                     {
-                        if (null != BoardArray.Instance().GetTilePiecePropertiesAt(row, i))
+                        if (null != board.GetTilePiecePropertiesAt(row, i))
                         {
                             isClear = false;
                             break;
@@ -194,7 +200,7 @@ public class MovementLogic
                     bool isClear = true;
                     for (int i = 6; i > 4; i--)
                     {
-                        if (null != BoardArray.Instance().GetTilePiecePropertiesAt(row, i))
+                        if (null != board.GetTilePiecePropertiesAt(row, i))
                         {
                             isClear = false;
                             break;
@@ -235,11 +241,11 @@ public class MovementLogic
         //Clear pieces causing check
         piecesAttackingKing.Clear();
 
-        foreach (TileIndex index in BoardArray.Instance().Indicies)
+        foreach (TileIndex index in board.Indicies)
         {
-            if (BoardArray.Instance().GetTilePiecePropertiesAt(index) != null)
+            if (board.GetTilePiecePropertiesAt(index) != null)
             {
-                bool isWhiteTeam = BoardArray.Instance().GetTilePiecePropertiesAt(index).Team == Team.White;
+                bool isWhiteTeam = board.GetTilePiecePropertiesAt(index).Team == Team.White;
                 (List<TileIndex> moveList, List<TileIndex> threatenedTiles) = CalcThreatsAndMovesBy(index.row, index.col);
                 allMoves[index] = moveList;
                 foreach (var threat in threatenedTiles)
@@ -268,15 +274,15 @@ public class MovementLogic
         //-if hit another friendly stop
         //-if hit enemy queen bishop or rook get the alignment type
         //-set pinned if correct type
-        TileIndex wKing = BoardArray.Instance().wKingIndex;
-        TileIndex bKing = BoardArray.Instance().bKingIndex;
+        TileIndex wKing = board.wKingIndex;
+        TileIndex bKing = board.bKingIndex;
         FlagPinnedPieces(wKing);
         FlagPinnedPieces(bKing);
 
         //Flags any pieces pinned to the provided tileIndex piece
         void FlagPinnedPieces(TileIndex king)
         {
-            Team team = BoardArray.Instance().GetTilePiecePropertiesAt(king).Team;
+            Team team = board.GetTilePiecePropertiesAt(king).Team;
             for (int colDir = -1; colDir < 2; colDir++)
             {
                 for (int rowDir = -1; rowDir < 2; rowDir++)
@@ -287,7 +293,7 @@ public class MovementLogic
                     TileIndex potentialPin = TileIndex.Null; //no pin state
                     while (IsIndexOnBoard(new TileIndex(checkRow, checkCol)))
                     {
-                        ChessPieceProperties checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkRow, checkCol);
+                        ChessPieceProperties checkPiece = board.GetTilePiecePropertiesAt(checkRow, checkCol);
                         if (!ReferenceEquals(checkPiece, null))
                         {
                             if (checkPiece.Team == team)
@@ -308,16 +314,16 @@ public class MovementLogic
                                         switch (checkPiece.Type) //if aligned correctly for piece type pin the unit
                                         {
                                             case PieceType.Queen:
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).isPinned = true;
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
+                                                board.GetTilePiecePropertiesAt(potentialPin).isPinned = true;
+                                                board.GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
                                                 break;
                                             case PieceType.Bishop:
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).isPinned = mode == AlignmentMode.Diagonal;
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
+                                                board.GetTilePiecePropertiesAt(potentialPin).isPinned = mode == AlignmentMode.Diagonal;
+                                                board.GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
                                                 break;
                                             case PieceType.Rook:
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).isPinned = mode == AlignmentMode.Cardinal;
-                                                BoardArray.Instance().GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
+                                                board.GetTilePiecePropertiesAt(potentialPin).isPinned = mode == AlignmentMode.Cardinal;
+                                                board.GetTilePiecePropertiesAt(potentialPin).pinningPieceIndex = new TileIndex(checkRow, checkCol);
                                                 break;
                                         }
                                     }
@@ -338,8 +344,8 @@ public class MovementLogic
     //Removes moves made invalid by the king being in check or king moving into check
     private void RemoveInvalidCheckMoves()
     {
-        TileIndex wKing = BoardArray.Instance().wKingIndex;
-        TileIndex bKing = BoardArray.Instance().bKingIndex;
+        TileIndex wKing = board.wKingIndex;
+        TileIndex bKing = board.bKingIndex;
         //Debug.Log("White King Position" + wKing.row + ", " + wKing.col);
         //Debug.Log("Black King Position" + bKing.row + ", " + bKing.col);
         isWInCheck = allThreatenedTileMaskB[wKing];
@@ -375,7 +381,7 @@ public class MovementLogic
             }
 
 
-            var kingProperties = BoardArray.Instance().GetTilePiecePropertiesAt(king);
+            var kingProperties = board.GetTilePiecePropertiesAt(king);
             bool isOneThreat = piecesAttackingKing.Count == 1;
             //Calculate Mask for valid moves
             TileMask<bool> validMovesMask = new TileMask<bool>(); //-declare
@@ -384,7 +390,7 @@ public class MovementLogic
             {
                 //Debug.Log("One King Threat Detected");
                 TileIndex threat = piecesAttackingKing[0];
-                var threatInfo = BoardArray.Instance().GetTilePiecePropertiesAt(threat);
+                var threatInfo = board.GetTilePiecePropertiesAt(threat);
 
                 //For all single threats the attacking piece can be taken
                 validMovesMask[threat] = true;
@@ -409,7 +415,7 @@ public class MovementLogic
             {
                 if (Utils.IndexToTileIndex(i) != king)
                 {
-                    ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
+                    ChessPieceProperties piece = board.GetTilePiecePropertiesAt(Utils.IndexToTileIndex(i));
                     if (piece != null)
                     {
                         if (piece.Team == kingProperties.Team)
@@ -448,7 +454,7 @@ public class MovementLogic
         List<TileIndex> moveList = new List<TileIndex>();
         List<TileIndex> threatList = new List<TileIndex>();
 
-        ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(row, col);
+        ChessPieceProperties piece = board.GetTilePiecePropertiesAt(row, col);
         int side = piece.CompareTag("Player Piece") ? 1 : -1; //Enemy pawns move down
 
         switch (piece.Type)
@@ -505,7 +511,7 @@ public class MovementLogic
         {
 
             //Debug.LogError("Pin Situation Not Yet Accounted For");
-            TileIndex king = piece.Team == Team.White ? BoardArray.Instance().wKingIndex : BoardArray.Instance().bKingIndex;
+            TileIndex king = piece.Team == Team.White ? board.wKingIndex : board.bKingIndex;
             if (piece.pinningPieceIndex != TileIndex.Null)
             {
                 List<TileIndex> tmpList = new List<TileIndex>();
@@ -537,7 +543,7 @@ public class MovementLogic
             {
                 if (!IsIndexOnBoard(index))
                     return;
-                var target = BoardArray.Instance().GetTilePiecePropertiesAt(index);
+                var target = board.GetTilePiecePropertiesAt(index);
                 if (target != null)
                 {
                     if (target.Type == PieceType.Pawn)
@@ -632,7 +638,7 @@ public class MovementLogic
             if (!IsIndexOnBoard(checkIndex))
                 return false;
             ChessPieceProperties checkPiece;
-            checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkIndex);
+            checkPiece = board.GetTilePiecePropertiesAt(checkIndex);
 
             if (isAddThreat) AddThreat(checkIndex); //Squares Always threatened but move only valid when piece present;
 
@@ -653,7 +659,7 @@ public class MovementLogic
             if (!IsIndexOnBoard(checkIndex))
                 return false;
             ChessPieceProperties checkPiece;
-            checkPiece = BoardArray.Instance().GetTilePiecePropertiesAt(checkIndex);
+            checkPiece = board.GetTilePiecePropertiesAt(checkIndex);
 
             //Can threaten squares occupied by friendly but not move there
             if (isAddThreat) AddThreat(checkIndex);
@@ -686,7 +692,7 @@ public class MovementLogic
                 Debug.LogException(new Exception("Attempted to add threat for tile with no piece present"));
             }
             //Cashe index if piece is checking opposing king
-            ChessPieceProperties king = BoardArray.Instance().GetTilePiecePropertiesAt(index);
+            ChessPieceProperties king = board.GetTilePiecePropertiesAt(index);
             if (king != null)
             {
                 if (king.Type == PieceType.King && king.Team != piece.Team)
@@ -819,7 +825,7 @@ public class MovementLogic
 
     public void CheckDoubleMoveFlag(TileIndex pieceIndex, TileIndex end)
     {
-        ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(pieceIndex);
+        ChessPieceProperties piece = board.GetTilePiecePropertiesAt(pieceIndex);
         if (piece != null)
         {
             if (PieceType.Pawn == piece.Type)
@@ -838,7 +844,7 @@ public class MovementLogic
 
     public void ResetDoubleMoveFlag(TileIndex pieceIndex)
     {
-        ChessPieceProperties piece = BoardArray.Instance().GetTilePiecePropertiesAt(pieceIndex);
+        ChessPieceProperties piece = board.GetTilePiecePropertiesAt(pieceIndex);
         if (piece != null)
         {
             piece.isHasJustDoubleMoved = false;

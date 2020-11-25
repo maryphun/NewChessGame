@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovementManager : Singleton<MovementManager>
+
+public class MovementManager : MonoBehaviour
 {
     [HideInInspector] public MovementLogic logic;
-    private BoardArray board;
+    public BoardArray board { get; private set; }
 
-    protected override void Awake()
+    void Awake()
     {
-        base.Awake();
-        logic = new MovementLogic();
-        board = BoardArray.Instance();
+        board = new BoardArray(transform.position);
+        logic = new MovementLogic(board);
     }
 
     /// <summary>
