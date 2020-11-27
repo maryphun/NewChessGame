@@ -29,12 +29,13 @@ public class ChessManager : MonoBehaviour
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
     private GameObject wKing, wQueen, bKing, bQueen;
 
-    private BoardArray board;
     private MovementManager moveManager;
     private List<GameObject> whitePieces, blackPieces;
 
     private void Awake()
     {
+        moveManager = GetComponent<MovementManager>();
+
         wPawns = new GameObject[8];
         wKnights = new GameObject[2];
         wRooks = new GameObject[2];
@@ -48,12 +49,6 @@ public class ChessManager : MonoBehaviour
         whitePieces = new List<GameObject>();
         blackPieces = new List<GameObject>();
 
-    }
-
-    private void Start()
-    {
-        moveManager = GetComponent<MovementManager>();
-        board = moveManager.board;
     }
 
     public IEnumerator InitiateChess()
@@ -104,11 +99,11 @@ public class ChessManager : MonoBehaviour
         // Move all pawn to the correct position
         for (int i = 0; i < 8; i++)
         {
-            Debug.Log("white pawn: " + wPawns[i].name + " board:" + (board != null) + " i:" + i);
-            wPawns[i].transform.DOMove(board.GetTileCenter(1, i), 0.5f, false);
-            bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
-            board.SetTilePieceAt(1, i, wPawns[i], (PieceID)i, true);
-            board.SetTilePieceAt(6, i, bPawns[i], (PieceID)i, true);
+            Debug.Log("white pawn: " + wPawns[i].name + " board:" + (moveManager.board != null) + " i:" + i);
+            wPawns[i].transform.DOMove(moveManager.board.GetTileCenter(1, i), 0.5f, false);
+            bPawns[i].transform.DOMove(moveManager.board.GetTileCenter(6, i), 0.5f, false);
+            moveManager.board.SetTilePieceAt(1, i, wPawns[i], (PieceID)i, true);
+            moveManager.board.SetTilePieceAt(6, i, bPawns[i], (PieceID)i, true);
             AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
             yield return new WaitForSeconds(0.1f);
         }
@@ -118,10 +113,10 @@ public class ChessManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 0 : 7;
-            wRooks[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
-            bRooks[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wRooks[i], (PieceID)i + 8, true);
-            board.SetTilePieceAt(7, index, bRooks[i], (PieceID)i + 8, true);
+            wRooks[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f, false);
+            bRooks[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f, false);
+            moveManager.board.SetTilePieceAt(0, index, wRooks[i], (PieceID)i + 8, true);
+            moveManager.board.SetTilePieceAt(7, index, bRooks[i], (PieceID)i + 8, true);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -131,10 +126,10 @@ public class ChessManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 1 : 6;
-            wKnights[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
-            bKnights[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wKnights[i], (PieceID)i + 10, true);
-            board.SetTilePieceAt(7, index, bKnights[i], (PieceID)i + 10, true);
+            wKnights[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f, false);
+            bKnights[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f, false);
+            moveManager.board.SetTilePieceAt(0, index, wKnights[i], (PieceID)i + 10, true);
+            moveManager.board.SetTilePieceAt(7, index, bKnights[i], (PieceID)i + 10, true);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -144,24 +139,24 @@ public class ChessManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 2 : 5;
-            wBishops[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
-            bBishops[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wBishops[i], (PieceID)i + 12, true);
-            board.SetTilePieceAt(7, index, bBishops[i], (PieceID)i + 12, true);
+            wBishops[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f, false);
+            bBishops[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f, false);
+            moveManager.board.SetTilePieceAt(0, index, wBishops[i], (PieceID)i + 12, true);
+            moveManager.board.SetTilePieceAt(7, index, bBishops[i], (PieceID)i + 12, true);
         }
 
         yield return new WaitForSeconds(0.5f);
 
         // Move King and Queen to the correct position
         AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
-        wQueen.transform.DOMove(board.GetTileCenter(0, 3), 0.5f, false);
-        wKing.transform.DOMove(board.GetTileCenter(0, 4), 0.5f, false);
-        bQueen.transform.DOMove(board.GetTileCenter(7, 3), 0.5f, false);
-        bKing.transform.DOMove(board.GetTileCenter(7, 4), 0.5f, false);
-        board.SetTilePieceAt(0, 3, wQueen, PieceID.Queen, true);
-        board.SetTilePieceAt(0, 4, wKing, PieceID.King, true);
-        board.SetTilePieceAt(7, 3, bQueen, PieceID.Queen, true);
-        board.SetTilePieceAt(7, 4, bKing, PieceID.King, true);
+        wQueen.transform.DOMove(moveManager.board.GetTileCenter(0, 3), 0.5f, false);
+        wKing.transform.DOMove(moveManager.board.GetTileCenter(0, 4), 0.5f, false);
+        bQueen.transform.DOMove(moveManager.board.GetTileCenter(7, 3), 0.5f, false);
+        bKing.transform.DOMove(moveManager.board.GetTileCenter(7, 4), 0.5f, false);
+        moveManager.board.SetTilePieceAt(0, 3, wQueen, PieceID.Queen, true);
+        moveManager.board.SetTilePieceAt(0, 4, wKing, PieceID.King, true);
+        moveManager.board.SetTilePieceAt(7, 3, bQueen, PieceID.Queen, true);
+        moveManager.board.SetTilePieceAt(7, 4, bKing, PieceID.King, true);
         yield return new WaitForSeconds(0.51f);
 
         // Update it's rendering order. This function should always get called when you move the piece

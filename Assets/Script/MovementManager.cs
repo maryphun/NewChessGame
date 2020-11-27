@@ -7,7 +7,6 @@ public class MovementManager : MonoBehaviour
 {
     [HideInInspector] public MovementLogic logic;
     public BoardArray board { get; private set; }
-
     void Awake()
     {
         board = new BoardArray(transform.position);

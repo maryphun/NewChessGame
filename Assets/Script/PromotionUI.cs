@@ -28,7 +28,6 @@ public class PromotionUI : MonoBehaviour
 
     private CursorInput input = null;
     private int currentChoice;
-    private BoardArray board;
     
     private TileIndex targetindex;
     private GameStateManager gamestate;
@@ -51,12 +50,6 @@ public class PromotionUI : MonoBehaviour
         else KeyInput.Default.DebugConfirm.performed += _ => Select(currentChoice);
     }
 
-    private void Start()
-    {
-        // reference
-        board = moveManager.board;
-    }
-
     private void OnEnable()
     {
         KeyInput.Enable();
@@ -69,7 +62,7 @@ public class PromotionUI : MonoBehaviour
 
     private void Select(int choice)
     {
-        GameObject targetpiece = board.GetTilePieceAt(targetindex);
+        GameObject targetpiece = moveManager.board.GetTilePieceAt(targetindex);
         GameObject replacePrefab;
         GameObject[] prefabList = targetpiece.GetComponent<ChessPieceProperties>().Team == Team.White ? wReplacePrefab : bReplacePrefab;
 

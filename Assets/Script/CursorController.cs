@@ -14,7 +14,6 @@ public class CursorController : MonoBehaviour
     [SerializeField] private bool canMoveEnemyChess = false;
     [SerializeField] private MovementManager moveManager;
 
-    private BoardArray board;
     private ChessPieceProperties lockedOnPiece;   // store the chess piece that you have locked to move or attack
     private TileIndex lockedOnPieceIndex;
     private List<Transform> validMoveVisualList;
@@ -45,12 +44,6 @@ public class CursorController : MonoBehaviour
         
     }
 
-    private void Start()
-    {
-        board = moveManager.board;
-    }
-
-
     public void Confirm()
     {
         if (!isInTurn)  // not your turn
@@ -66,7 +59,7 @@ public class CursorController : MonoBehaviour
         }
 
         // check if there is a chess piece on selected index
-        GameObject tmp = board.GetTilePieceAt((int)currentPosition.y, (int)currentPosition.x);
+        GameObject tmp = moveManager.board.GetTilePieceAt((int)currentPosition.y, (int)currentPosition.x);
         if (tmp != null)
         {
             ChessPieceProperties piece = tmp.GetComponent<ChessPieceProperties>();
@@ -103,8 +96,8 @@ public class CursorController : MonoBehaviour
         foreach (TileIndex validMove in validMoves)
         {
             var validMoveVisual = new GameObject(lockedOnPiece.gameObject.name + "'s possible move");
-            validMoveVisual.transform.position = board.GetTileCenter(index.row, index.col) + lockedOnPiece.GraphicPosition;
-            validMoveVisual.transform.DOMove(board.GetTileCenter(validMove.row, validMove.col) + lockedOnPiece.GraphicPosition, cursorMoveSpeed, false);
+            validMoveVisual.transform.position = moveManager.board.GetTileCenter(index.row, index.col) + lockedOnPiece.GraphicPosition;
+            validMoveVisual.transform.DOMove(moveManager.board.GetTileCenter(validMove.row, validMove.col) + lockedOnPiece.GraphicPosition, cursorMoveSpeed, false);
             var newRenderer = validMoveVisual.AddComponent<SpriteRenderer>();
             var originRenderer = lockedOnPiece.SpriteRenderer;
             newRenderer.sprite = originRenderer.sprite;
@@ -117,7 +110,7 @@ public class CursorController : MonoBehaviour
             hoveringValidMove = null;
 
             // check if this is an attack move
-            var attackTarget = board.GetTilePiecePropertiesAt(validMove);
+            var attackTarget = moveManager.board.GetTilePiecePropertiesAt(validMove);
             if (attackTarget != null
                 && attackTarget.Team != cursorTeam)
             {
@@ -133,7 +126,7 @@ public class CursorController : MonoBehaviour
         TileIndex moveTargetIndex = new TileIndex(currentPosition.y, currentPosition.x);
 
         // check if this is a normal move or attacking
-        GameObject targetChess = board.GetTilePieceAt(moveTargetIndex.row, moveTargetIndex.col);
+        GameObject targetChess = moveManager.board.GetTilePieceAt(moveTargetIndex.row, moveTargetIndex.col);
         bool isAttackMove = false;
 
         if (targetChess != null)
@@ -143,7 +136,7 @@ public class CursorController : MonoBehaviour
         else if (IsEnPassant(lockedOnPieceIndex, moveTargetIndex, lockedOnPiece))
         {
             isAttackMove = true;
-            targetChess = board.GetTilePieceAt(lockedOnPieceIndex.row, moveTargetIndex.col);
+            targetChess = moveManager.board.GetTilePieceAt(lockedOnPieceIndex.row, moveTargetIndex.col);
         }
         else if (IsCastling(lockedOnPieceIndex, moveTargetIndex, lockedOnPiece))
         {
@@ -252,7 +245,7 @@ public class CursorController : MonoBehaviour
         currentPosition.x = Mathf.Clamp(currentPosition.x, 0, 7);
         currentPosition.y = Mathf.Clamp(currentPosition.y, 0, 7);
 
-        Vector2 newPos = board.GetTileCenter(currentPosition.y, currentPosition.x);
+        Vector2 newPos = moveManager.board.GetTileCenter(currentPosition.y, currentPosition.x);
         transform.DOMove(newPos, cursorMoveSpeed, false);
 
         // sound effect
@@ -261,13 +254,13 @@ public class CursorController : MonoBehaviour
         // select anad unselect pieces
         if (lastPosition != currentPosition)
         {
-            GameObject piece = board.GetTilePieceAt(lastPosition.y, lastPosition.x);
+            GameObject piece = moveManager.board.GetTilePieceAt(lastPosition.y, lastPosition.x);
             if (piece != null)
             {
                 piece.GetComponent<ChessPieceProperties>().Unselect(cursorMoveSpeed);
             }
 
-            piece = board.GetTilePieceAt(currentPosition.y, currentPosition.x);
+            piece = moveManager.board.GetTilePieceAt(currentPosition.y, currentPosition.x);
             if (piece != null)
             {
                 piece.GetComponent<ChessPieceProperties>().Select(cursorMoveSpeed);
@@ -288,7 +281,7 @@ public class CursorController : MonoBehaviour
             foreach (Transform validMoveVisual in validMoveVisualList)
             {
                 // check for new cell (new position index)
-                Vector2 tmp = board.GetTileCenter(currentPosition.y, currentPosition.x) + lockedOnPiece.GraphicPosition;
+                Vector2 tmp = moveManager.board.GetTileCenter(currentPosition.y, currentPosition.x) + lockedOnPiece.GraphicPosition;
                 if (tmp == ((Vector2)validMoveVisual.position))
                 {
                     hoveringValidMove = validMoveVisual;
@@ -308,7 +301,7 @@ public class CursorController : MonoBehaviour
 
     public void ResetPosition()
     {
-        //Reset is called before Start so cannot use normal board variable
+        //Reset is called before Start so cannot use normal moveManager.board variable
         transform.position = moveManager.board.GetTileCenter(currentPosition.y, currentPosition.x);
     }
 
@@ -340,7 +333,7 @@ public class CursorController : MonoBehaviour
             }
 
             ChessPieceProperties rook;
-            rook = board.GetTilePiecePropertiesAt(new TileIndex(moveOrigin.row, targetArray));
+            rook = moveManager.board.GetTilePiecePropertiesAt(new TileIndex(moveOrigin.row, targetArray));
 
             if (rook != null)
             {
@@ -375,10 +368,10 @@ public class CursorController : MonoBehaviour
         }
 
         ChessPieceProperties rook;
-        rook = board.GetTilePiecePropertiesAt(new TileIndex(rookMoveTarget.row, targetArray));
+        rook = moveManager.board.GetTilePiecePropertiesAt(new TileIndex(rookMoveTarget.row, targetArray));
 
         if (rook != null
-            && board.GetTilePiecePropertiesAt(rookMoveTarget) == null) // target location is available to move too, just to double check
+            && moveManager.board.GetTilePiecePropertiesAt(rookMoveTarget) == null) // target location is available to move too, just to double check
         {
             Debug.Log("from " + new TileIndex(rookMoveTarget.row, targetArray) + " move to " + rookMoveTarget);
             // move the selected chess piece to this position index
