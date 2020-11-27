@@ -15,6 +15,7 @@ public enum SelectionType
 [RequireComponent(typeof(CanvasGroup))]
 public class PromotionUI : MonoBehaviour
 {
+    [SerializeField] private bool debugMode = false;
     [SerializeField] private CanvasGroup canvasGroup = default;
     [SerializeField] private Image[] choiceList = default;
     [SerializeField] private float grayscale = 0.415f;
@@ -44,17 +45,16 @@ public class PromotionUI : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        // reference
-        board = moveManager.board;
-        
         // register movement key
         KeyInput.Default.MoveHorizontal.performed += ctx => MoveSelection((int)ctx.ReadValue<float>());
-        KeyInput.Default.Confirm.performed += _ => Select(currentChoice);
+        if (!debugMode) KeyInput.Default.Confirm.performed += _ => Select(currentChoice);
+        else KeyInput.Default.DebugConfirm.performed += _ => Select(currentChoice);
     }
 
     private void Start()
     {
-        
+        // reference
+        board = moveManager.board;
     }
 
     private void OnEnable()

@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // This script need CursorController to work
 [RequireComponent(typeof(CursorController))]
 public class Input : MonoBehaviour
 {
+    [SerializeField] private bool debugMode = false;
     [SerializeField] private float buttonHoldMoveInterval = 0.15f;
     [SerializeField] private float buttonHoldMoveTime = 0.8f;
 
@@ -16,7 +18,7 @@ public class Input : MonoBehaviour
     private float buttonHoldTime;
     CursorController controller;
 
-    private CursorInput KeyInput
+    public CursorInput KeyInput
     {
         get
         {
@@ -33,7 +35,8 @@ public class Input : MonoBehaviour
         KeyInput.Default.MoveHorizontal.performed += ctx => MoveButtonClicked(new Vector2Int((int)ctx.ReadValue<float>(), 0));
         KeyInput.Default.MoveVertical.canceled += _ => MoveButtonReleased();
         KeyInput.Default.MoveHorizontal.canceled += _ => MoveButtonReleased();
-        KeyInput.Default.Confirm.performed += _ => controller.Confirm();
+        if(!debugMode) KeyInput.Default.Confirm.performed += _ => controller.Confirm();
+        else KeyInput.Default.DebugConfirm.performed += _ => controller.Confirm(); //c for confirm
         KeyInput.Default.Cancel.performed += _ => controller.Cancel();
 
         if (!controlOn)

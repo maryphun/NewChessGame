@@ -49,6 +49,14 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""DebugConfirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""27af21ce-9120-405d-837b-5ef30eede35b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -216,6 +224,17 @@ public class @CursorInput : IInputActionCollection, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce7fa744-1872-41ad-aae9-b732ec225cf5"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""DebugConfirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -245,6 +264,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
         m_Default_MoveHorizontal = m_Default.FindAction("MoveHorizontal", throwIfNotFound: true);
         m_Default_Confirm = m_Default.FindAction("Confirm", throwIfNotFound: true);
         m_Default_Cancel = m_Default.FindAction("Cancel", throwIfNotFound: true);
+        m_Default_DebugConfirm = m_Default.FindAction("DebugConfirm", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -298,6 +318,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Default_MoveHorizontal;
     private readonly InputAction m_Default_Confirm;
     private readonly InputAction m_Default_Cancel;
+    private readonly InputAction m_Default_DebugConfirm;
     public struct DefaultActions
     {
         private @CursorInput m_Wrapper;
@@ -306,6 +327,7 @@ public class @CursorInput : IInputActionCollection, IDisposable
         public InputAction @MoveHorizontal => m_Wrapper.m_Default_MoveHorizontal;
         public InputAction @Confirm => m_Wrapper.m_Default_Confirm;
         public InputAction @Cancel => m_Wrapper.m_Default_Cancel;
+        public InputAction @DebugConfirm => m_Wrapper.m_Default_DebugConfirm;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -327,6 +349,9 @@ public class @CursorInput : IInputActionCollection, IDisposable
                 @Cancel.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
+                @DebugConfirm.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDebugConfirm;
+                @DebugConfirm.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDebugConfirm;
+                @DebugConfirm.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDebugConfirm;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -343,6 +368,9 @@ public class @CursorInput : IInputActionCollection, IDisposable
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @DebugConfirm.started += instance.OnDebugConfirm;
+                @DebugConfirm.performed += instance.OnDebugConfirm;
+                @DebugConfirm.canceled += instance.OnDebugConfirm;
             }
         }
     }
@@ -362,5 +390,6 @@ public class @CursorInput : IInputActionCollection, IDisposable
         void OnMoveHorizontal(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnDebugConfirm(InputAction.CallbackContext context);
     }
 }

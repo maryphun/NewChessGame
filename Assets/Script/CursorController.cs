@@ -35,14 +35,19 @@ public class CursorController : MonoBehaviour
 
     private void Awake()
     {
-        board = moveManager.board;
+        
         validMoveVisualList = new List<Transform>();
         threateningChess = new List<ChessPieceProperties>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-
         currentPosition = initialPosition;
         lockedOnPiece = null;
+        
+    }
+
+    private void Start()
+    {
+        board = moveManager.board;
     }
 
 
@@ -303,7 +308,8 @@ public class CursorController : MonoBehaviour
 
     public void ResetPosition()
     {
-        transform.position = board.GetTileCenter(currentPosition.y, currentPosition.x);
+        //Reset is called before Start so cannot use normal board variable
+        transform.position = moveManager.board.GetTileCenter(currentPosition.y, currentPosition.x);
     }
 
     private bool IsEnPassant(TileIndex moveOrigin, TileIndex moveTarget, ChessPieceProperties movingChess)

@@ -8,25 +8,27 @@ using System;
 public class ChessManager : MonoBehaviour
 {
     [SerializeField] private Transform chessPieceHolder = default;
-    [SerializeField] private GameObject 
-        wPawnPrefab = default, 
-        wKnightPrefab = default, 
-        wRookPrefab = default , 
-        wBishopPrefab = default, 
-        wQueenPrefab = default, 
+    [SerializeField]
+    private GameObject
+        wPawnPrefab = default,
+        wKnightPrefab = default,
+        wRookPrefab = default,
+        wBishopPrefab = default,
+        wQueenPrefab = default,
         wKingPRefab = default;
-    [SerializeField] private GameObject 
-        bPawnPrefab = default, 
-        bKnightPrefab = default, 
-        bRookPrefab = default, 
-        bBishopPrefab = default, 
-        bQueenPrefab = default, 
+    [SerializeField]
+    private GameObject
+        bPawnPrefab = default,
+        bKnightPrefab = default,
+        bRookPrefab = default,
+        bBishopPrefab = default,
+        bQueenPrefab = default,
         bKingPRefab = default;
 
     private GameObject[] wPawns, wKnights, wRooks, wBishops;
     private GameObject[] bPawns, bKnights, bRooks, bBishops;
     private GameObject wKing, wQueen, bKing, bQueen;
-    
+
     private BoardArray board;
     private MovementManager moveManager;
     private List<GameObject> whitePieces, blackPieces;
@@ -43,11 +45,15 @@ public class ChessManager : MonoBehaviour
         bRooks = new GameObject[2];
         bBishops = new GameObject[2];
 
-        moveManager = GetComponent<MovementManager>();
-        board = moveManager.board;
-        
         whitePieces = new List<GameObject>();
         blackPieces = new List<GameObject>();
+
+    }
+
+    private void Start()
+    {
+        moveManager = GetComponent<MovementManager>();
+        board = moveManager.board;
     }
 
     public IEnumerator InitiateChess()
@@ -98,6 +104,7 @@ public class ChessManager : MonoBehaviour
         // Move all pawn to the correct position
         for (int i = 0; i < 8; i++)
         {
+            Debug.Log("white pawn: " + wPawns[i].name + " board:" + (board != null) + " i:" + i);
             wPawns[i].transform.DOMove(board.GetTileCenter(1, i), 0.5f, false);
             bPawns[i].transform.DOMove(board.GetTileCenter(6, i), 0.5f, false);
             board.SetTilePieceAt(1, i, wPawns[i], (PieceID)i, true);
@@ -113,8 +120,8 @@ public class ChessManager : MonoBehaviour
             int index = i == 0 ? 0 : 7;
             wRooks[i].transform.DOMove(board.GetTileCenter(0, index), 0.5f, false);
             bRooks[i].transform.DOMove(board.GetTileCenter(7, index), 0.5f, false);
-            board.SetTilePieceAt(0, index, wRooks[i], (PieceID)i+8, true);
-            board.SetTilePieceAt(7, index, bRooks[i], (PieceID)i+8, true);
+            board.SetTilePieceAt(0, index, wRooks[i], (PieceID)i + 8, true);
+            board.SetTilePieceAt(7, index, bRooks[i], (PieceID)i + 8, true);
         }
 
         yield return new WaitForSeconds(0.5f);
