@@ -183,7 +183,7 @@ public class ChessManager : MonoBehaviour
             oPawns[i] = Instantiate(pawn, new Vector2(0f, 6f), Quaternion.identity);
 
             // Listing
-            opponentPieces.Add(pPawns[i]);
+            opponentPieces.Add(oPawns[i]);
         }
 
         // Instantiate Rook, Knight and Bishop
@@ -211,5 +211,27 @@ public class ChessManager : MonoBehaviour
         // Listing
         opponentPieces.Add(oQueen);
         opponentPieces.Add(oKing);
+    }
+    
+    public void RemoveAndReset()
+    {
+        // destroy all objects
+        foreach (GameObject pieces in playerPieces)
+        {
+            Destroy(pieces);
+        }
+        foreach (GameObject pieces in opponentPieces)
+        {
+            Destroy(pieces);
+        }
+
+        // clear array
+        for (int row  = 0; row <= 8; row++)
+        {
+            for (int col = 0; col <= 8; col++)
+            {
+                moveManager.board.ClearTrackerAt(row, col);
+            }
+        }
     }
 }

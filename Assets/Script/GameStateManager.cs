@@ -65,8 +65,8 @@ public class GameStateManager : MonoBehaviour
         InitiateCursor(enemyCursor, playerTeam == Team.White ? Team.Black : Team.White);
         enemyCursor.GetComponent<CursorAIInput>().active = true;
 
-        // player start first
-        isPlayerTurn = false;
+        // white start first
+        isPlayerTurn = (playerTeam == Team.Black);
         Turn();
     }
 
@@ -137,5 +137,18 @@ public class GameStateManager : MonoBehaviour
         target.SpriteRenderer.DOFade(1.0f, 0.1f);
         target.ResetPosition();
         target.gamestate = this;
+    }
+
+    public void GameEnd()
+    {
+        // Clear the board
+        GetComponent<ChessManager>().RemoveAndReset();
+
+        // Restart the game instantly
+        StartCoroutine(GetComponent<ChessManager>().InitiateChess(playerTeam, 0f));
+
+        // white start first
+        isPlayerTurn = (playerTeam == Team.Black);
+        Turn();
     }
 }
