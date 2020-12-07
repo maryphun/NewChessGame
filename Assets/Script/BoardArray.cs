@@ -103,6 +103,18 @@ public class BoardArray
         pieces[this.Index2DToIndex(row, column)] = null;
     }
 
+    //Destroys all pieces on board and clears board data
+    public void ClearBoard()
+    {
+        foreach(ChessPieceProperties piece in pieces)
+        {
+            if (piece != null)
+                UnityEngine.Object.Destroy(piece.gameObject);
+        }
+        ClearBoardData();
+    }
+
+    //Clears board data but does not destroy objects
     public void ClearBoardData()
     {
         Utils.ClearArray(bPieceLocations, TileIndex.Null);
