@@ -48,8 +48,8 @@ public class BoardArray
     public List<TileIndex> bKingThreats;
 
     private const float tileSize = 1f; //changes spacing of tile centers
-
     private Vector2[] tileCenterPosition; //this is worldspace position
+
     private ChessPieceProperties[] pieces;
 
     public BoardArray(Vector2 boardCenterPosition)
@@ -100,8 +100,18 @@ public class BoardArray
     //unregister the piece in this index
     public void RemoveTilePieceAt(int row, int column)
     {
-        
         pieces[this.Index2DToIndex(row, column)] = null;
+    }
+
+    public void ClearBoardData()
+    {
+        Utils.ClearArray(bPieceLocations, TileIndex.Null);
+        Utils.ClearArray(wPieceLocations, TileIndex.Null);
+        Utils.ClearArray(pieces, null);
+        wKingThreats.Clear();
+        bKingThreats.Clear();
+        wKingIndex = TileIndex.Null;
+        bKingIndex = TileIndex.Null;
     }
 
     //Remove pieces tracking position

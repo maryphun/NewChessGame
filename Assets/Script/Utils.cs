@@ -28,4 +28,22 @@ public static class Utils
         }
         return new TileIndex(index/8, index%8);
     }
+
+    public static bool ClearArray<T>(T[] array, T nullValue)
+    {
+        try
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = nullValue;
+            }
+            return true;
+        }
+        catch
+        {
+            Debug.LogError("Failed to clear array");
+            return false;
+        }
+        
+    }
 }
