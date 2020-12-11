@@ -6,6 +6,8 @@ using DG.Tweening;
 public class GameStateManager : MonoBehaviour
 {
     [SerializeField] bool alwaysPlayerTurn = false;
+    [SerializeField] Team playerTeam = Team.White;
+    [SerializeField, Range(0.175f, 2.0f)] float initiateTimeMultiplier = 1.0f;
 
     // Reference
     [SerializeField] GameObject chessBoard = default;
@@ -29,11 +31,11 @@ public class GameStateManager : MonoBehaviour
 
         var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
 
-        yield return new WaitForSeconds(clipInfo[0].clip.length * 0.4f);
+        yield return new WaitForSeconds(clipInfo[0].clip.length * 0.4f* initiateTimeMultiplier);
         AudioManager.Instance.PlaySFX("whoosh", 0.45f);
-        yield return new WaitForSeconds(clipInfo[0].clip.length * 0.6f);
+        yield return new WaitForSeconds(clipInfo[0].clip.length * 0.6f * initiateTimeMultiplier);
 
-        StartCoroutine(Shake(chessBoard.transform, 0.25f, 0.25f));
+        StartCoroutine(Shake(chessBoard.transform, 0.25f, 0.25f * initiateTimeMultiplier));
         AudioManager.Instance.PlaySFX("impact");
 
         for (int i = -8; i <= 8; i++)
@@ -45,26 +47,26 @@ public class GameStateManager : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f * initiateTimeMultiplier);
 
-        StartCoroutine(GetComponent<ChessManager>().InitiateChess());
-        chessBoard.GetComponentInChildren<CanvasGroup>().DOFade(1.0f, 3f);
+        StartCoroutine(GetComponent<ChessManager>().InitiateChess(playerTeam, initiateTimeMultiplier));
+        chessBoard.GetComponentInChildren<CanvasGroup>().DOFade(1.0f, 3f * initiateTimeMultiplier);
 
         //AudioManager.Instance.SetMusicVolume(0.5f);
         //AudioManager.Instance.PlayMusicWithFade("theme", 3f);
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3f * initiateTimeMultiplier);
 
         UICanvas.CharacterMoveIn(0.5f);
 
         // Enable cursor and assign a team for it
-        InitiateCursor(playerCursor, Team.White);
+        InitiateCursor(playerCursor, playerTeam);
         playerCursor.GetComponent<Input>().SetControlActive(true);
-        InitiateCursor(enemyCursor, Team.Black);
+        InitiateCursor(enemyCursor, playerTeam == Team.White ? Team.Black : Team.White);
         enemyCursor.GetComponent<CursorAIInput>().active = true;
 
-        // player start first
-        isPlayerTurn = false;
+        // white start first
+        isPlayerTurn = (playerTeam == Team.Black);
         Turn();
     }
 
@@ -135,5 +137,18 @@ public class GameStateManager : MonoBehaviour
         target.SpriteRenderer.DOFade(1.0f, 0.1f);
         target.ResetPosition();
         target.gamestate = this;
+    }
+
+    public void GameEnd()
+    {
+        // Clear the board
+        GetComponent<ChessManager>().RemoveAndReset();
+
+        // Restart the game instantly
+        StartCoroutine(GetComponent<ChessManager>().InitiateChess(playerTeam, 0f));
+
+        // white start first
+        isPlayerTurn = (playerTeam == Team.Black);
+        Turn();
     }
 }

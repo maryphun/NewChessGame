@@ -25,87 +25,48 @@ public class ChessManager : MonoBehaviour
         bQueenPrefab = default,
         bKingPRefab = default;
 
-    private GameObject[] wPawns, wKnights, wRooks, wBishops;
-    private GameObject[] bPawns, bKnights, bRooks, bBishops;
-    private GameObject wKing, wQueen, bKing, bQueen;
+    private GameObject[] pPawns, pKnights, pRooks, pBishops;
+    private GameObject[] oPawns, oKnights, oRooks, oBishops;
+    private GameObject pKing, pQueen, oKing, oQueen;
 
     private MovementManager moveManager;
-    private List<GameObject> whitePieces, blackPieces;
+    private List<GameObject> playerPieces, opponentPieces;
 
     private void Awake()
     {
         moveManager = GetComponent<MovementManager>();
 
-        wPawns = new GameObject[8];
-        wKnights = new GameObject[2];
-        wRooks = new GameObject[2];
-        wBishops = new GameObject[2];
+        pPawns = new GameObject[8];
+        pKnights = new GameObject[2];
+        pRooks = new GameObject[2];
+        pBishops = new GameObject[2];
 
-        bPawns = new GameObject[8];
-        bKnights = new GameObject[2];
-        bRooks = new GameObject[2];
-        bBishops = new GameObject[2];
+        oPawns = new GameObject[8];
+        oKnights = new GameObject[2];
+        oRooks = new GameObject[2];
+        oBishops = new GameObject[2];
 
-        whitePieces = new List<GameObject>();
-        blackPieces = new List<GameObject>();
+        playerPieces = new List<GameObject>();
+        opponentPieces = new List<GameObject>();
 
     }
 
-    public IEnumerator InitiateChess()
+    public IEnumerator InitiateChess(Team playerChess, float speedMultiplier = 1.0f)
     {
-        // Instantiate pawn
-        for (int i = 0; i < 8; i++)
-        {
-            wPawns[i] = Instantiate(wPawnPrefab, new Vector2(0f, -6f), Quaternion.identity);
-            bPawns[i] = Instantiate(bPawnPrefab, new Vector2(0f, 6f), Quaternion.identity);
-
-            // Listing
-            whitePieces.Add(wPawns[i]);
-            blackPieces.Add(bPawns[i]);
-        }
-
-        // Instantiate Rook, Knight and Bishop
-        for (int i = 0; i < 2; i++)
-        {
-            wRooks[i] = Instantiate(wRookPrefab, new Vector2(0f, -6f), Quaternion.identity);
-            wKnights[i] = Instantiate(wKnightPrefab, new Vector2(0f, -6f), Quaternion.identity);
-            wBishops[i] = Instantiate(wBishopPrefab, new Vector2(0f, -6f), Quaternion.identity);
-
-            bRooks[i] = Instantiate(bRookPrefab, new Vector2(0f, 6f), Quaternion.identity);
-            bKnights[i] = Instantiate(bKnightPrefab, new Vector2(0f, 6f), Quaternion.identity);
-            bBishops[i] = Instantiate(bBishopPrefab, new Vector2(0f, 6f), Quaternion.identity);
-
-            // Listing
-            whitePieces.Add(wRooks[i]);
-            whitePieces.Add(wKnights[i]);
-            whitePieces.Add(wBishops[i]);
-            blackPieces.Add(bRooks[i]);
-            blackPieces.Add(bKnights[i]);
-            blackPieces.Add(bBishops[i]);
-        }
-
-        // Instantiate Queen and King
-        wQueen = Instantiate(wQueenPrefab, new Vector2(0f, -6f), Quaternion.identity);
-        wKing = Instantiate(wKingPRefab, new Vector2(0f, -6f), Quaternion.identity);
-        bQueen = Instantiate(bQueenPrefab, new Vector2(0f, 6f), Quaternion.identity);
-        bKing = Instantiate(bKingPRefab, new Vector2(0f, 6f), Quaternion.identity);
-
-        // Listing
-        whitePieces.Add(wQueen);
-        whitePieces.Add(wKing);
-        blackPieces.Add(bQueen);
-        blackPieces.Add(bKing);
+        // function that handle all the object instantiation
+        SpawnChessForPlayer(playerChess);
+        SpawnChessForOpponent(playerChess == Team.White ? Team.Black : Team.White);
 
         // Move all pawn to the correct position
         for (int i = 0; i < 8; i++)
         {
-            Debug.Log("white pawn: " + wPawns[i].name + " board:" + (moveManager.board != null) + " i:" + i);
-            wPawns[i].transform.DOMove(moveManager.board.GetTileCenter(1, i), 0.5f, false);
-            bPawns[i].transform.DOMove(moveManager.board.GetTileCenter(6, i), 0.5f, false);
-            moveManager.board.SetTilePieceAt(1, i, wPawns[i], (PieceID)i, true);
-            moveManager.board.SetTilePieceAt(6, i, bPawns[i], (PieceID)i, true);
+            Debug.Log("white pawn: " + pPawns[i].name + " board:" + (moveManager.board != null) + " i:" + i);
+            pPawns[i].transform.DOMove(moveManager.board.GetTileCenter(1, i), 0.5f * speedMultiplier, false);
+            oPawns[i].transform.DOMove(moveManager.board.GetTileCenter(6, i), 0.5f * speedMultiplier, false);
+            moveManager.board.SetTilePieceAt(1, i, pPawns[i], (PieceID)i, true);
+            moveManager.board.SetTilePieceAt(6, i, oPawns[i], (PieceID)i, true);
             AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.1f * speedMultiplier);
         }
 
         // Move all Rooks to the correct position
@@ -113,64 +74,164 @@ public class ChessManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 0 : 7;
-            wRooks[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f, false);
-            bRooks[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f, false);
-            moveManager.board.SetTilePieceAt(0, index, wRooks[i], (PieceID)i + 8, true);
-            moveManager.board.SetTilePieceAt(7, index, bRooks[i], (PieceID)i + 8, true);
+            pRooks[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f * speedMultiplier, false);
+            oRooks[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f * speedMultiplier, false);
+            moveManager.board.SetTilePieceAt(0, index, pRooks[i], (PieceID)i + 8, true);
+            moveManager.board.SetTilePieceAt(7, index, oRooks[i], (PieceID)i + 8, true);
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f * speedMultiplier);
 
         // Move all Kights to the correct position
         AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 1 : 6;
-            wKnights[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f, false);
-            bKnights[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f, false);
-            moveManager.board.SetTilePieceAt(0, index, wKnights[i], (PieceID)i + 10, true);
-            moveManager.board.SetTilePieceAt(7, index, bKnights[i], (PieceID)i + 10, true);
+            pKnights[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f * speedMultiplier, false);
+            oKnights[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f * speedMultiplier, false);
+            moveManager.board.SetTilePieceAt(0, index, pKnights[i], (PieceID)i + 10, true);
+            moveManager.board.SetTilePieceAt(7, index, oKnights[i], (PieceID)i + 10, true);
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f * speedMultiplier);
 
         // Move all Bishops to the correct position
         AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
         for (int i = 0; i < 2; i++)
         {
             int index = i == 0 ? 2 : 5;
-            wBishops[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f, false);
-            bBishops[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f, false);
-            moveManager.board.SetTilePieceAt(0, index, wBishops[i], (PieceID)i + 12, true);
-            moveManager.board.SetTilePieceAt(7, index, bBishops[i], (PieceID)i + 12, true);
+            pBishops[i].transform.DOMove(moveManager.board.GetTileCenter(0, index), 0.5f * speedMultiplier, false);
+            oBishops[i].transform.DOMove(moveManager.board.GetTileCenter(7, index), 0.5f * speedMultiplier, false);
+            moveManager.board.SetTilePieceAt(0, index, pBishops[i], (PieceID)i + 12, true);
+            moveManager.board.SetTilePieceAt(7, index, oBishops[i], (PieceID)i + 12, true);
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f * speedMultiplier);
 
         // Move King and Queen to the correct position
         AudioManager.Instance.PlaySFX("chessSpawn", 0.05f);
-        wQueen.transform.DOMove(moveManager.board.GetTileCenter(0, 3), 0.5f, false);
-        wKing.transform.DOMove(moveManager.board.GetTileCenter(0, 4), 0.5f, false);
-        bQueen.transform.DOMove(moveManager.board.GetTileCenter(7, 3), 0.5f, false);
-        bKing.transform.DOMove(moveManager.board.GetTileCenter(7, 4), 0.5f, false);
-        moveManager.board.SetTilePieceAt(0, 3, wQueen, PieceID.Queen, true);
-        moveManager.board.SetTilePieceAt(0, 4, wKing, PieceID.King, true);
-        moveManager.board.SetTilePieceAt(7, 3, bQueen, PieceID.Queen, true);
-        moveManager.board.SetTilePieceAt(7, 4, bKing, PieceID.King, true);
-        yield return new WaitForSeconds(0.51f);
+        pQueen.transform.DOMove(moveManager.board.GetTileCenter(0, 3), 0.5f * speedMultiplier, false);
+        pKing.transform.DOMove(moveManager.board.GetTileCenter(0, 4), 0.5f * speedMultiplier, false);
+        oQueen.transform.DOMove(moveManager.board.GetTileCenter(7, 3), 0.5f * speedMultiplier, false);
+        oKing.transform.DOMove(moveManager.board.GetTileCenter(7, 4), 0.5f * speedMultiplier, false);
+        moveManager.board.SetTilePieceAt(0, 3, pQueen, PieceID.Queen, true);
+        moveManager.board.SetTilePieceAt(0, 4, pKing, PieceID.King, true);
+        moveManager.board.SetTilePieceAt(7, 3, oQueen, PieceID.Queen, true);
+        moveManager.board.SetTilePieceAt(7, 4, oKing, PieceID.King, true);
+        yield return new WaitForSeconds(0.51f * speedMultiplier);
 
         // Update it's rendering order. This function should always get called when you move the piece
-        foreach (GameObject pieces in whitePieces)
+        foreach (GameObject pieces in playerPieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
             pieces.transform.SetParent(chessPieceHolder);
             pieces.gameObject.tag = "Player Piece";
         }
-        foreach (GameObject pieces in blackPieces)
+        foreach (GameObject pieces in opponentPieces)
         {
             pieces.GetComponent<ChessPieceProperties>().UpdateRenderOrder();
             pieces.transform.SetParent(chessPieceHolder);
         }
         moveManager.logic.UpdateValidMoves();
+    }
+
+    private void SpawnChessForPlayer(Team team)
+    {
+        // Instantiate pawn
+        for (int i = 0; i < 8; i++)
+        {
+            GameObject pawn = team == Team.White ? wPawnPrefab : bPawnPrefab;
+            pPawns[i] = Instantiate(pawn, new Vector2(0f, -6f), Quaternion.identity);
+
+            // Listing
+            playerPieces.Add(pPawns[i]);
+        }
+
+        // Instantiate Rook, Knight and Bishop
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject rook = team == Team.White ? wRookPrefab : bRookPrefab;
+            GameObject knight = team == Team.White ? wKnightPrefab : bKnightPrefab;
+            GameObject bishop = team == Team.White ? wBishopPrefab : bBishopPrefab;
+            pRooks[i] = Instantiate(rook, new Vector2(0f, -6f), Quaternion.identity);
+            pKnights[i] = Instantiate(knight, new Vector2(0f, -6f), Quaternion.identity);
+            pBishops[i] = Instantiate(bishop, new Vector2(0f, -6f), Quaternion.identity);
+
+            // Listing
+            playerPieces.Add(pRooks[i]);
+            playerPieces.Add(pKnights[i]);
+            playerPieces.Add(pBishops[i]);
+        }
+
+        // Instantiate Queen and King
+        GameObject queen = team == Team.White ? wQueenPrefab : bQueenPrefab;
+        GameObject king = team == Team.White ? wKingPRefab : bKingPRefab;
+        pQueen = Instantiate(queen, new Vector2(0f, -6f), Quaternion.identity);
+        pKing = Instantiate(king, new Vector2(0f, -6f), Quaternion.identity);
+
+        // Listing
+        playerPieces.Add(pQueen);
+        playerPieces.Add(pKing);
+    }
+
+    private void SpawnChessForOpponent(Team team)
+    {
+        // Instantiate pawn
+        for (int i = 0; i < 8; i++)
+        {
+            GameObject pawn = team == Team.White ? wPawnPrefab : bPawnPrefab;
+            oPawns[i] = Instantiate(pawn, new Vector2(0f, 6f), Quaternion.identity);
+
+            // Listing
+            opponentPieces.Add(oPawns[i]);
+        }
+
+        // Instantiate Rook, Knight and Bishop
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject rook = team == Team.White ? wRookPrefab : bRookPrefab;
+            GameObject knight = team == Team.White ? wKnightPrefab : bKnightPrefab;
+            GameObject bishop = team == Team.White ? wBishopPrefab : bBishopPrefab;
+            oRooks[i] = Instantiate(rook, new Vector2(0f, 6f), Quaternion.identity);
+            oKnights[i] = Instantiate(knight, new Vector2(0f, 6f), Quaternion.identity);
+            oBishops[i] = Instantiate(bishop, new Vector2(0f, 6f), Quaternion.identity);
+
+            // Listing
+            opponentPieces.Add(oRooks[i]);
+            opponentPieces.Add(oKnights[i]);
+            opponentPieces.Add(oBishops[i]);
+        }
+
+        // Instantiate Queen and King
+        GameObject queen = team == Team.White ? wQueenPrefab : bQueenPrefab;
+        GameObject king = team == Team.White ? wKingPRefab : bKingPRefab;
+        oQueen = Instantiate(queen, new Vector2(0f, 6f), Quaternion.identity);
+        oKing = Instantiate(king, new Vector2(0f, 6f), Quaternion.identity);
+
+        // Listing
+        opponentPieces.Add(oQueen);
+        opponentPieces.Add(oKing);
+    }
+    
+    public void RemoveAndReset()
+    {
+        // destroy all objects
+        foreach (GameObject pieces in playerPieces)
+        {
+            Destroy(pieces);
+        }
+        foreach (GameObject pieces in opponentPieces)
+        {
+            Destroy(pieces);
+        }
+
+        // clear array
+        for (int row  = 0; row <= 8; row++)
+        {
+            for (int col = 0; col <= 8; col++)
+            {
+                moveManager.board.ClearTrackerAt(row, col);
+            }
+        }
     }
 }

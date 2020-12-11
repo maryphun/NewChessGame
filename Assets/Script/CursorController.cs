@@ -187,6 +187,11 @@ public class CursorController : MonoBehaviour
         {
             gamestate.Promotion(moveTargetIndex);
         }
+        else if (moveManager.logic.IsInCheckmate(cursorTeam == Team.White ? Team.Black : Team.White))
+        {
+            // checkmate detected. restart the game
+            gamestate.GameEnd();
+        }
         else
         {
             // pass the turn to other side

@@ -245,6 +245,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2494898728928032355, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
+      propertyPath: initiateSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494898728928032355, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
+      propertyPath: initiateTimeMultiplier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494898728928032355, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
+      propertyPath: playerTeam
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2494898729143752297, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.064225554
@@ -292,6 +304,10 @@ PrefabInstance:
     - target: {fileID: 2494898729143752298, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
       propertyPath: m_Name
       value: GameInstance
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845206868833789106, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
+      propertyPath: canMoveEnemyChess
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9090315953221195928, guid: 310f1465e7f5cea48926c7879e58ec37, type: 3}
       propertyPath: m_Camera

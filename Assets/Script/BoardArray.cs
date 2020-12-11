@@ -146,6 +146,11 @@ public class BoardArray
         if (piece.Team == Team.White) Debug.Log("Cleared "+ piece.Team + " "+ piece.Id + " Tracker. Now " + wPieceLocations[(int)piece.Id].row + ", "+ wPieceLocations[(int)piece.Id].col);
     }
 
+    public void ResetBoard()
+    {
+        
+    }
+
     //Returns the specified pieces location on the board.
     public TileIndex GetPieceLocation(Team team, PieceID id)
     {
